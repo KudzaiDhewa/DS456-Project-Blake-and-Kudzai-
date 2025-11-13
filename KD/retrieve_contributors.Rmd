@@ -1,0 +1,455 @@
+---
+title: "Authorship"
+author: "Kudzai"
+date: "2025-11-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+# ------------------------------------------------------------------------------
+# R Pipeline to Fetch Contributor Data from Libraries.io (v2 - Fixed Selection)
+# ------------------------------------------------------------------------------
+
+# --- 1. Load Required Libraries ---
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(purrr)
+
+# --- 2. Configuration (MANDATORY) ---
+# Replace "YOUR_API_KEY" with your actual key.
+API_KEY <- "351295a36b546a06b5602a0e2535e86a" 
+# CHANGED: Using "Conda" platform to match the user's image/query context.
+PLATFORM <- "Cargo" 
+
+# --- 3. Main Function to Fetch Contributors ---
+
+#' Fetch all contributors for a given R package from Libraries.io
+#'
+#' This function handles pagination to retrieve the full list of contributors
+#' for a package on the CRAN platform.
+#'
+#' @param package_name A character string of the R package name (e.g., "dplyr").
+#' @return A data frame containing contributor details, or NULL on error.
+get_libraries_io_contributors <- function(package_name) {
+  
+  if (API_KEY == "YOUR_API_KEY") {
+    stop("Please replace 'YOUR_API_KEY' with your actual Libraries.io API key.")
+  }
+  
+  # Base URL for the contributor endpoint
+  base_url <- sprintf("https://libraries.io/api/%s/%s/contributors", 
+                      PLATFORM, package_name)
+  
+  # Parameters for the initial request
+  initial_query_params <- list(
+    api_key = API_KEY,
+    per_page = 100, 
+    page = 1
+  )
+  
+  cat(sprintf("Fetching contributors for %s on platform %s...\n", package_name, PLATFORM))
+  
+  all_contributors <- list()
+  page <- 1
+  total_pages <- 1 
+  
+  # Loop through pages until all data is collected
+  while (page <= total_pages) {
+    
+    query_params <- initial_query_params
+    query_params$page <- page
+    
+    # --- Make the API Request ---
+    response <- tryCatch({
+      GET(url = base_url, query = query_params)
+    }, error = function(e) {
+      cat(sprintf("HTTP Request Error on page %d: %s\n", page, e$message))
+      return(NULL)
+    })
+    
+    if (is.null(response) || http_error(response)) {
+      status <- status_code(response)
+      cat(sprintf("Libraries.io API returned HTTP Status: %d on page %d\n", status, page))
+      if (status == 429) {
+        warning("Rate limit exceeded. Please wait and try again.")
+      }
+      break
+    }
+    
+    # --- Parse JSON Content ---
+    content_text <- content(response, "text", encoding = "UTF-8")
+    
+    # Libraries.io returns an array of contributor objects
+    page_data <- fromJSON(content_text, flatten = TRUE)
+    
+    if (length(page_data) == 0 || nrow(page_data) == 0) {
+      cat("Reached end of data.\n")
+      break
+    }
+    
+    # Store the results
+    all_contributors[[page]] <- page_data
+    
+    cat(sprintf("Successfully fetched page %d. Contributors found on this page: %d\n", 
+                page, nrow(page_data)))
+    
+    # If the number of results is less than per_page, we are on the last page.
+    if (nrow(page_data) < 100) {
+      break
+    }
+    
+    # Prepare for next iteration
+    page <- page + 1
+    total_pages <- total_pages + 1
+    
+    # Be polite: Wait a moment between requests to respect the rate limit (60/min)
+    Sys.sleep(0.5) 
+  }
+  
+  if (length(all_contributors) == 0) {
+    cat("No contributor data retrieved.\n")
+    return(NULL)
+  }
+  
+  # Combine all page results into a single data frame
+  final_df <- bind_rows(all_contributors)
+  
+  # --- TROUBLESHOOTING: Print available column names ---
+  # The previous error indicated 'contributions' column was missing.
+  # This output confirms the available fields for debugging.
+  cat("\n--- Available Columns in the Combined Data Frame ---\n")
+  print(names(final_df))
+  cat("---------------------------------------------------\n")
+
+  # Select and rename columns for a cleaner output
+  # NOTE: Based on your provided JSON sample, the 'contributions' field is not 
+  # present in the API response. We are removing this column selection to 
+  # prevent the script from crashing.
+
+  
+    
+  cat(sprintf("\nData retrieval complete. Total unique contributors: %d\n", 
+              nrow(final_df)))
+              
+  return(final_df)
+}
+
+# --- 4. Example Usage ---
+
+# 1. Define the R package you want to analyze (e.g., 'dplyr' or 'ggplot2')
+# CHANGED: Targeting the C library on the Conda platform, as shown in the user's image.
+target_package <- "libxml" 
+
+# 2. Run the pipeline function
+# NOTE: You MUST replace "YOUR_API_KEY" with your actual key.
+contributor_data <- get_libraries_io_contributors(target_package)
+
+# 3. View the results (optional)
+if (!is.null(contributor_data)) {
+  # Inspect the top contributors
+  # WARNING: Since the 'contributions' field is missing from the API response,
+  # the following analysis is commented out as it relies on that column.
+  # print(head(contributor_data %>% arrange(desc(contributions_count))))
+  
+  # Example analysis: distribution of contribution counts
+  # print(
+  #   contributor_data %>%
+  #     summarise(
+  #       Total_Contributors = n(),
+  #       Mean_Contributions = mean(contributions_count, na.rm = TRUE),
+  #       Median_Contributions = median(contributions_count, na.rm = TRUE),
+  #       Max_Contributions = max(contributions_count, na.rm = TRUE)
+  #     )
+  # )
+  
+  # Print simple head of the resulting data frame
+  cat("\n--- Contributor Data Sample (Contributions Count Missing) ---\n")
+  print(head(contributor_data))
+  cat("----------------------------------------------------------\n")
+} else {
+  cat(sprintf("Could not retrieve data for %s.\n", target_package))
+}
+
+```
+```{r}
+#commits_by_year_libxml2.R
+install.packages(c("httr2","dplyr","purrr","tibble","readr","lubridate"))
+library(httr2)
+library(dplyr)
+library(purrr)
+library(tibble)
+library(readr)
+library(lubridate)
+
+API_BASE <- "https://gitlab.gnome.org/api/v4"
+PROJECT_PATH <- "GNOME/libxml2"           # canonical path
+TOKEN <- Sys.getenv("GITLAB_TOKEN")       # optional, but helps with rate limits
+
+# Optional time window (use YYYY-MM-DD or leave NULL to pull full history)
+SINCE <- NULL   # e.g., "1998-01-01"
+UNTIL <- NULL   # e.g., "2025-12-31"
+
+# Output CSVs
+OUT_COMMITS_YEAR <- "libxml2_commits_by_year.csv"
+OUT_AUTHOR_YEAR  <- "libxml2_commits_by_author_year.csv"
+
+# ---------- Helpers ----------
+get_project_id <- function(path, token = NULL) {
+  req <- request(paste0(API_BASE, "/projects/", URLencode(path, reserved = TRUE)))
+  if (!is.null(token) && nchar(token) > 0) req <- req_headers(req, "PRIVATE-TOKEN" = token)
+  resp <- req_perform(req)
+  resp_check_status(resp)
+  resp_body_json(resp)$id
+}
+
+fetch_all_commits <- function(project_id, token = NULL, since = NULL, until = NULL, per_page = 100) {
+  # Pull *all* commits for repo with pagination.
+  # Returns tibble with authored_date/committed_date, author_name/email, id, etc.
+  page <- 1L
+  all_chunks <- list()
+
+  repeat {
+    req <- request(paste0(API_BASE, "/projects/", project_id, "/repository/commits")) |>
+      req_url_query(page = page, per_page = per_page)
+    if (!is.null(since)) req <- req_url_query(req, since = since)
+    if (!is.null(until)) req <- req_url_query(req, until = until)
+    if (!is.null(token) && nchar(token) > 0) req <- req_headers(req, "PRIVATE-TOKEN" = token)
+
+    resp <- req_perform(req)
+
+    # Graceful handling of empty/finished pages
+    if (resp_status(resp) == 204) break
+    resp_check_status(resp)
+
+    dat <- resp_body_json(resp, simplifyVector = TRUE)
+    if (length(dat) == 0) break
+
+    # Normalize to tibble with the fields we need
+    chunk <- tibble(
+      id             = as.character(dat$id),
+      short_id       = as.character(dat$short_id),
+      title          = as.character(dat$title),
+      author_name    = as.character(dat$author_name),
+      author_email   = as.character(dat$author_email),
+      authored_date  = as.character(dat$authored_date),
+      committed_date = as.character(dat$committed_date),
+      committer_name = as.character(dat$committer_name),
+      committer_email= as.character(dat$committer_email),
+      web_url        = as.character(dat$web_url)
+    )
+    all_chunks[[length(all_chunks) + 1L]] <- chunk
+
+    next_page <- resp_headers(resp)[["x-next-page"]]
+    if (is.null(next_page) || next_page == "") break
+    page <- as.integer(next_page)
+  }
+
+  if (length(all_chunks) == 0) {
+    return(tibble(
+      id=character(), short_id=character(), title=character(),
+      author_name=character(), author_email=character(),
+      authored_date=character(), committed_date=character(),
+      committer_name=character(), committer_email=character(),
+      web_url=character()
+    ))
+  }
+
+  bind_rows(all_chunks)
+}
+
+# ---------- Run ----------
+project_id <- get_project_id(PROJECT_PATH, TOKEN)
+message("Resolved project ID: ", project_id)
+
+commits <- fetch_all_commits(project_id, token = TOKEN, since = SINCE, until = UNTIL)
+
+if (nrow(commits) == 0) {
+  message("No commits returned for the specified window.")
+  quit(status = 0)
+}
+
+# Use committed_date (or authored_date if committed_date is missing)
+commits <- commits %>%
+  mutate(ts = coalesce(committed_date, authored_date)) %>%
+  mutate(ts = ymd_hms(ts, quiet = TRUE, tz = "UTC")) %>%
+  filter(!is.na(ts)) %>%
+  mutate(year = year(ts))
+
+# 1) Commits per year
+commits_by_year <- commits %>%
+  count(year, name = "commits") %>%
+  arrange(year)
+
+# 2) Commits per author per year (top N can be derived later)
+commits_by_author_year <- commits %>%
+  mutate(author_name = coalesce(author_name, "<unknown>"),
+         author_email = coalesce(author_email, NA_character_)) %>%
+  count(year, author_name, author_email, name = "commits") %>%
+  arrange(year, desc(commits))
+
+# ---------- Save ----------
+write_csv(commits_by_year, OUT_COMMITS_YEAR)
+write_csv(commits_by_author_year, OUT_AUTHOR_YEAR)
+
+message("Wrote: ", OUT_COMMITS_YEAR, " (", nrow(commits_by_year), " rows)")
+message("Wrote: ", OUT_AUTHOR_YEAR,  " (", nrow(commits_by_author_year), " rows)")
+
+# ---------- Peek ----------
+message("\nCommits by year (head):")
+print(head(commits_by_year, 10))
+
+message("\nTop authors in the most recent year:")
+latest_yr <- max(commits_by_author_year$year, na.rm = TRUE)
+commits_by_author_year %>%
+  filter(year == latest_yr) %>%
+  slice_max(order_by = commits, n = 10, with_ties = FALSE) %>%
+  print(n = 10)
+
+```
+
+```{r}
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(scales)
+
+# ---- If you only have commits_by_author_year / commits_by_year ----
+# Maintainers per year = count distinct authors with commits that year
+maintainers_by_year <- commits_by_author_year %>%
+  group_by(year) %>%
+  summarise(maintainers = n_distinct(author_name), .groups = "drop")
+
+# Combine with commits per year
+activity <- commits_by_year %>%
+  left_join(maintainers_by_year, by = "year") %>%
+  mutate(commits_per_maintainer = commits / maintainers)
+
+# ---- Plots ----
+
+# 1) Two-panel trend: Maintainers vs Commits
+p1 <- ggplot(activity, aes(year, maintainers)) +
+  geom_col() +
+  geom_line(aes(y = maintainers), linewidth = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, linetype = 2) +
+  labs(title = "Maintainers (unique commit authors) per year",
+       x = NULL, y = "Maintainers")
+
+p2 <- ggplot(activity, aes(year, commits)) +
+  geom_col() +
+  geom_line(aes(y = commits), linewidth = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, linetype = 2) +
+  labs(title = "Commits per year",
+       x = NULL, y = "Commits")
+
+# If you have patchwork installed you can do: (install.packages("patchwork"))
+# p1 / p2
+# Otherwise just print separately:
+print(p1); print(p2)
+
+# 2) Efficiency: commits per maintainer (are fewer people doing more/less?)
+p3 <- ggplot(activity, aes(year, commits_per_maintainer)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, linetype = 2) +
+  labs(title = "Commits per maintainer", x = NULL, y = "Commits / Maintainer")
+print(p3)
+
+# ---- Quick stats to answer “decreased over time?” ----
+# Linear trend tests (simple, readable)
+trend_commits <- lm(commits ~ year, data = activity)
+trend_maint   <- lm(maintainers ~ year, data = activity)
+trend_eff     <- lm(commits_per_maintainer ~ year, data = activity)
+
+summarise_trend <- function(fit, label) {
+  s <- summary(fit)
+  slope <- coef(fit)[["year"]]
+  pval  <- s$coefficients["year", "Pr(>|t|)"]
+  sprintf("%s: slope = %.2f per year (p = %.3g)", label, slope, pval)
+}
+
+cat(summarise_trend(trend_maint,   "Maintainers"), "\n")
+cat(summarise_trend(trend_commits, "Commits"), "\n")
+cat(summarise_trend(trend_eff,     "Commits/maintainer"), "\n")
+
+# Optional: show percent change from first to last year
+pct_change <- function(x, y) scales::percent((y - x) / x, accuracy = 0.1)
+first_last <- activity %>%
+  summarise(
+    years = paste0(min(year), "–", max(year)),
+    maintainers_change = pct_change(first(maintainers), last(maintainers)),
+    commits_change     = pct_change(first(commits), last(commits)),
+    eff_change         = pct_change(first(commits_per_maintainer), last(commits_per_maintainer))
+  )
+print(first_last)
+
+```
+
+
+```{r}
+library(dplyr); library(ggplot2); library(forcats)
+
+topN <- 20
+top_authors <- commits_by_author_year |>
+  group_by(author_name) |>
+  summarise(total = sum(commits, na.rm = TRUE), .groups = "drop") |>
+  slice_max(total, n = topN) |>
+  pull(author_name)
+
+dat_heat <- commits_by_author_year |>
+  filter(author_name %in% top_authors)
+
+ggplot(dat_heat, aes(x = factor(year), y = fct_reorder(author_name, -commits, .fun = max), fill = commits)) +
+  geom_tile() +
+  scale_x_discrete(
+    breaks = seq(1998, 2025, 5)   # show every 5 years
+  ) +
+  labs(title = paste("Top", topN, "Libxml Contributors by Year"),
+       x = "Year", y = NULL, fill = "Commits") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)  # tilt labels for clarity
+  )
+
+
+```
+```{r}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+
+# Filter for 2025 and sum commits per author
+dat_2025 <- commits_by_author_year %>%
+  filter(year == 2025) %>%
+  group_by(author_name) %>%
+  summarise(total_commits = sum(commits, na.rm = TRUE), .groups = "drop")
+
+# Bar chart
+ggplot(dat_2025, aes(
+  x = fct_reorder(author_name, total_commits),
+  y = total_commits
+)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Commits by Contributor in 2025",
+    x = NULL,
+    y = "Total Commits"
+  ) +
+  theme_minimal()
+
+
+
+```
+
+

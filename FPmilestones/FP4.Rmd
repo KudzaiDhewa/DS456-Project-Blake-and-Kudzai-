@@ -1,0 +1,316 @@
+---
+title: "FP4"
+author: "Kudzai and Blake"
+date: "2025-11-15"
+output: html_document
+---
+
+# **Maintenance Cost Estimation: A Comparative Study of C and Rust Open Source Libraries**
+
+## **Research Question**
+
+**Are open source libraries written in C more costly to maintain than those written in Rust?**
+
+## **Motivation**
+
+Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C. As a broader research topic to try and help him answer this question we decided to try and estimate the maintenance cost of C libraries versus Rust libraries with hope that our data centric results will help the expert make a more informed decision.
+
+---
+
+## **Methodology: Error Type Distribution**
+
+We use the types of errors commonly found in a program as a proxy for the complexity and cost of maintaining it.
+
+### **Core Thesis**
+
+Not all maintenance activities are equal:
+
+- Fixing a memory bug represents a higher cost and risk  
+- than updating documentation or other low-risk changes.
+
+Because of this, simply counting commits or lines of code is not enough. We need to know what kind of work is being done.
+
+---
+
+## **Our Approach**
+
+We built an automated pipeline to:
+
+- Classify every commit in a library’s history into a specific category (e.g., bug fix, refactor, documentation).
+- Distinguish between:
+  - **Maintenance**: fixing bugs, addressing regressions, patching issues.
+  - **Features**: adding new functionality, refactoring, improvements.
+- Analyze how these patterns change over time.
+
+This lets us construct a maintenance profile for C and Rust libraries and compare them.
+
+---
+
+## **Goal of the Analysis**
+
+By analyzing the distribution of commit categories over time, we aim to:
+
+- Quantify the balance between Maintenance (bug fixes) and Features (new work, refactors).
+- Identify whether C libraries tend to accumulate more high-risk maintenance work than Rust libraries.
+- Use this as evidence to answer the core question:  
+   - Are C libraries more costly to maintain than Rust libraries?
+
+---
+
+## **Data Pipeline**
+
+We process the full commit history of the library and generate a **classified time series** dataset that supports our visualizations. The script to generating this dataset is in the project github linked here [Project Github](https://github.com/8lak/graph_metric_pipeline)). The finalised classified dataset we used to make the visualizations in this rmd is linked here: 
+[Classified Commits Dataset](https://drive.google.com/file/d/1yTOFK_gx6I4FW0hO84XXB3L0NPY5t6_D/view?usp=drive_link).
+
+
+```{r, echo = FALSE}
+
+library(tidyverse)  
+library(lubridate)
+library(scales)
+
+
+```
+
+```{r, echo = FALSE}
+# Load + basic cleaning
+df <- read_csv("../data/FULLY_CLASSIFED_TIMESERIES.csv") 
+df <- df %>%
+  mutate(
+    authored_datetime = ymd_hms(authored_datetime, tz = "UTC"),
+    year             = year(authored_datetime),
+    is_bug_fix       = as.logical(is_bug_fix)
+  ) %>%
+  filter(
+    !is.na(year),
+    !is.na(is_bug_fix),
+    !is.na(category)
+  )
+```
+# **A. Ratio of Maintenance to Features Over Time**
+
+The first visualization focuses on the ratio of maintenance commits to feature commits per year.
+
+```{r,echo = FALSE}
+
+# A. Bug-fix ratio per year + trend line
+
+yearly_counts <- df %>%
+  count(year, is_bug_fix) %>%
+  pivot_wider(
+    names_from  = is_bug_fix,
+    values_from = n,
+    values_fill = 0
+  ) %>%
+  rename(
+    bug_fixes     = `TRUE`,
+    other_commits = `FALSE`
+  ) %>%
+  arrange(year) %>%
+  mutate(
+    bug_fix_ratio = if_else(other_commits > 0,
+                            bug_fixes / other_commits,
+                            bug_fixes),
+    idx = row_number()
+  )
+
+# Linear trend (like np.polyfit over index)
+ratio_lm <- lm(bug_fix_ratio ~ idx, data = yearly_counts)
+
+yearly_counts <- yearly_counts %>%
+  mutate(
+    trend_line = predict(ratio_lm),
+    year       = factor(year)
+  )
+
+ggplot(yearly_counts, aes(x = year, y = bug_fix_ratio, group = 1)) +
+  geom_line(color = "#d62728", linewidth = 0.9) +
+  geom_point(color = "#d62728", size = 2) +
+  geom_line(aes(y = trend_line),
+            linetype = "dashed",
+            linewidth = 1,
+            color = "#2ca02c") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "black") +
+  labs(
+    title = "Ratio of Maintenance to Features Over Time",
+    x     = "Year",
+    y     = "Ratio (Maintenance / Features)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+```
+
+##  **B.Commit Categories Over Time**
+
+We next look at what types of work are happening each year, not just whether they are bug fixes.
+
+```{r, echo = FALSE}
+
+# B. Commit categories: counts + proportions by year
+
+
+# Top 9 categories overall
+top9 <- df %>%
+  count(category, sort = TRUE) %>%
+  slice_head(n = 9) %>%
+  pull(category)
+
+# Use a consistent level order: top 9 + "Other"
+category_levels <- c(top9, "Other")
+
+df_cat <- df %>%
+  mutate(
+    year             = factor(year),
+    category_grouped = if_else(category %in% top9, category, "Other"),
+    category_grouped = factor(category_grouped, levels = category_levels)
+  )
+
+
+# B1. Yearly distribution (stacked counts)
+
+cat_counts <- df_cat %>%
+  count(year, category_grouped, name = "n")
+
+ggplot(cat_counts, aes(x = year, y = n, fill = category_grouped)) +
+  geom_col(width = 0.8) +
+  labs(
+    title = "Yearly Distribution of Commit Categories",
+    x     = "Year",
+    y     = "Number of Commits",
+    fill  = "Category"
+  ) +
+  scale_fill_viridis_d() +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  )
+
+
+# B2. Yearly proportions (stacked %, position = "fill")
+
+ggplot(df_cat, aes(x = year, fill = category_grouped)) +
+  geom_bar(position = "fill", width = 0.8) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(
+    title = "Yearly Proportion of Commit Categories",
+    x     = "Year",
+    y     = "Percentage of Commits (%)",
+    fill  = "Category"
+  ) +
+  scale_fill_viridis_d() +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  )
+
+```
+
+## **Summary of Visualizations**
+
+Here is a brief description of each generated plot.
+
+1. Ratio of Maintenance to Features Over Time
+
+This line chart showcases the fluctuating yearly ratio of maintenance commits to feature commits, revealing a long-term trend towards an increasing focus on maintenance as the project matures.
+
+2. Yearly Distribution of Commit Categories
+
+This stacked bar chart presents the absolute volume and categorical breakdown of commits each year, highlighting periods of high development activity and the specific types of work completed.
+
+3. Yearly Proportion of Commit Categories
+
+This 100% stacked bar chart illustrates the shifting strategic focus of development by showing the relative proportion of work dedicated to each commit category annually.
+
+## **C. Contributors over time**
+
+```{r, echo = FALSE}
+
+# C. Contributors over time (heatmap + 2025 bar)
+
+
+# Commits per author per year (base table)
+commits_by_author_year <- df %>%
+  filter(!is.na(author_name)) %>%
+  count(author_name, year, name = "commits")
+
+
+# C1. Heatmap for top N contributors
+
+topN <- 20
+
+top_authors <- commits_by_author_year %>%
+  group_by(author_name) %>%
+  summarise(total = sum(commits, na.rm = TRUE), .groups = "drop") %>%
+  slice_max(total, n = topN) %>%
+  pull(author_name)
+
+dat_heat <- commits_by_author_year %>%
+  filter(author_name %in% top_authors)
+
+ggplot(
+  dat_heat,
+  aes(
+    x    = factor(year),
+    y    = fct_reorder(author_name, -commits, .fun = max),
+    fill = commits
+  )
+) +
+  geom_tile() +
+  scale_x_discrete(
+    breaks = as.character(seq(min(as.integer(levels(df_cat$year))),
+                              max(as.integer(levels(df_cat$year))),
+                              by = 5))
+  ) +
+  labs(
+    title = paste("Top", topN, "Libxml Contributors by Year"),
+    x     = "Year",
+    y     = NULL,
+    fill  = "Commits"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+# C2. Bar chart: commits by contributor in 2025
+
+dat_2025 <- commits_by_author_year %>%
+  filter(year == 2025) %>%
+  group_by(author_name) %>%
+  summarise(total_commits = sum(commits, na.rm = TRUE), .groups = "drop")
+
+ggplot(dat_2025, aes(
+  x = fct_reorder(author_name, total_commits),
+  y = total_commits
+)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Commits by Contributor in 2025",
+    x     = NULL,
+    y     = "Total Commits"
+  ) +
+  theme_minimal()
+```
+
+## **Interpretation**
+
+In 2025, Nick Wellnhof is responsible for essentially all meaningful commit activity (~500 commits).
+All the other contributors make almost negligible contributions
+This means the project’s 2025 maintenance burden is resting overwhelmingly on one active maintainer. This is a risk signal for a widely used library. If the maintainer leaves then the library is left unmaintained.
+
+## **Further Steps**
+
+- Gather general contributor trends across C and Rust libraries
+- Analyze Corresponding Rust Libraries: Run the full pipeline on the list of comparable Rust libraries to create their error profiles.
+- Generate Comparative Visualizations: Create side-by-side charts comparing the C and Rust libraries in each domain 
+- Incorporate the Weighted Risk Score: Develop a risk score that is a weighted sum based on severity of type to have a single scalar for high-level comparison.
+
+Here is a link to a detailed project [plan](https://docs.google.com/document/d/1OMWLVy39tPIKtuOqm8erHPrpY19fboFg7Z_hybX_D9I/edit?tab=t.0)
+

@@ -1,0 +1,909 @@
+---
+title: "Throughput"
+author: "Kudzai"
+date: "2025-12-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(stringr)
+library(purrr)
+library(readr)
+library(ggplot2)
+```
+
+## C libraries
+```{r}
+coreutil_df <- read_csv("c/full_commit_coreutils.csv")
+libxml2_df <- read_csv("c/full_commit_libxml2.csv")
+nginx_df <- read_csv("c/full_commit_nginx.csv")
+openssl_df <- read_csv("c/full_commit_openssl.csv")
+sqlite_df <-  read_csv("c/full_commit_sqlite.csv")
+```
+# Rust libraries
+
+```{r}
+hyper_df <- read_csv("rust/full_commit_hyper.csv")
+nushell_df <- read_csv("rust/full_commit_nushell.csv")
+rustls_df <- read_csv("rust/full_commit_rustls.csv")
+sled_df <- read_csv("rust/full_commit_sled.csv")
+rust_coreutils_df <- read_csv("rust/full_commit_coreutils.csv")
+```
+
+
+
+# Helper functions
+
+```{r}
+add_loc <- function(df) {
+  df %>%
+    mutate(
+      lines_added = str_count(
+        diff,
+        regex("^\\+(?!\\+\\+)(?!\\s*@@).+", multiline = TRUE)
+      ),
+      lines_removed = str_count(
+        diff,
+        regex("^\\-(?!\\-)(?!\\s*@@).+", multiline = TRUE)
+      )
+    ) %>%
+    select(-message, -diff)
+}
+
+```
+
+# Named lists of dataframes
+
+```{r}
+c_dfs <- list(
+        coreutils = coreutil_df,
+        libxml2 = libxml2_df,
+        nginx = nginx_df,
+        openssl = openssl_df,
+        sqlite = sqlite_df
+)
+
+rust_dfs <- list(
+        hyper = hyper_df,
+        nushell = nushell_df,
+        rustls = rustls_df,
+        sled = sled_df,
+        rust_coreutils = rust_coreutils_df
+)
+```
+
+# Process C libraries
+
+```{r}
+all_commits_c <- imap_dfr(
+    c_dfs,
+    ~ add_loc(.x) %>%
+    mutate(
+    library = .y,
+    language = "C",
+    net_lines = lines_added - lines_removed
+    )
+)
+```
+
+# Process Rust libraries
+```{r}
+all_commits_r <- imap_dfr(
+      rust_dfs,
+      ~ add_loc(.x) %>%
+      mutate(
+      library = .y,
+      language = "Rust",
+      net_lines = lines_added - lines_removed
+      )
+)
+
+## Combine
+all_commits <- bind_rows(all_commits_c, all_commits_r)
+
+dplyr::glimpse(all_commits)
+```
+
+```{r}
+net_summary <- all_commits %>%
+group_by(language, library) %>%
+summarise(
+total_added   = sum(lines_added,   na.rm = TRUE),
+total_removed = sum(lines_removed, na.rm = TRUE),
+net_lines     = sum(net_lines,     na.rm = TRUE),
+.groups = "drop"
+)
+
+net_summary
+
+```
+```{r}
+ggplot(net_summary, aes(x = library, y = net_lines, fill = language)) +
+geom_col(position = "dodge") +
+labs(
+title = "Net Lines of Code Added by Library",
+x = "Library",
+y = "Net LOC (added - removed)",
+fill = "Language"
+) +
+theme_minimal() +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1)
+)
+
+```
+```{r}
+all_over_time <- all_commits %>%
+mutate(date = as.Date(authored_datetime)) %>%
+arrange(language, library, date) %>%
+group_by(language, library, date) %>%
+summarise(net_lines = sum(net_lines), .groups = "drop_last") %>%
+mutate(cum_net_lines = cumsum(net_lines)) %>%
+ungroup()
+
+# Check
+
+dplyr::glimpse(all_over_time)
+
+```
+```{r}
+ggplot(all_over_time, aes(x = date, y = cum_net_lines, color = library)) +
+geom_line(linewidth = 0.8) +
+facet_wrap(~ language, scales = "free_y") +
+scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+labs(
+title = "Cumulative Net LOC Over Time by Library",
+x = "Date",
+y = "Cumulative Net LOC"
+) +
+theme_minimal()
+
+```
+```{r}
+yearly_loc <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  group_by(year, language) %>%
+  summarise(net_loc = sum(net_lines, na.rm = TRUE), .groups = "drop") 
+  
+  
+
+yearly_loc
+```
+
+```{r}
+# 2. Plot: similar to the Android Platform chart
+ggplot(yearly_loc, aes(x = year, y = net_loc, fill = language)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Open Source Project Development (Additions - Deletions)",
+    x     = "Year",
+    y     = "LOC",
+    fill  = NULL
+  ) +
+  scale_fill_manual(values = c("Rust" = "royalblue3", "C" = "firebrick2")) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 14,
+      margin = margin(t = 20, b = 10)   # fix title being cut off
+    ),
+    axis.text.x = element_text(size = 12),
+    legend.position = "top",
+    plot.margin = margin(t = 25, r = 10, b = 10, l = 10)
+  )
+
+
+```
+#Pairwise Analysis
+
+
+##Contributor trends
+
+```{r}
+plot_pair <- function(data, proj_c, proj_rust, title) {
+
+  yearly_pair <- data %>%
+    filter(library %in% c(proj_c, proj_rust)) %>%
+    mutate(
+      date = as.Date(date),
+      year = lubridate::year(date)
+    ) %>%
+    group_by(year, library) %>%
+    summarise(net_loc = sum(net_lines, na.rm = TRUE), .groups = "drop")
+
+  ggplot(yearly_pair, aes(x = year, y = net_loc, fill = library)) +
+    geom_col(position = "dodge") +
+    labs(
+      title = title,
+      x     = "Year",
+      y     = "LOC",
+      fill  = NULL
+    ) +
+    scale_fill_manual(
+      values = setNames(
+        c("firebrick2", "royalblue3"),
+        c(proj_c, proj_rust)
+      )
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(
+        face   = "bold",
+        size   = 14,
+        margin = margin(t = 20, b = 10)
+      ),
+      axis.text.x    = element_text(size = 12),
+      legend.position = "top",
+      plot.margin    = margin(t = 25, r = 10, b = 10, l = 10)
+    )
+}
+
+```
+
+```{r}
+p_coreutils  <- plot_pair(
+  all_over_time,
+  proj_c   = "coreutils",
+  proj_rust = "rust_coreutils",
+  title    = "Net LOC per Year: coreutils vs rust_coreutils"
+)
+
+
+
+p_nginx <- plot_pair(
+  all_over_time,
+  proj_c   = "nginx",
+  proj_rust = "hyper",
+  title    = "Net LOC per Year: nginx vs hyper"
+)
+
+p_sqlite <- plot_pair(
+  all_over_time,
+  proj_c   = "sqlite",
+  proj_rust = "sled",
+  title    = "Net LOC per Year: sqlite vs sled"
+)
+
+p_openssl <- plot_pair(
+  all_over_time,
+  proj_c   = "openssl",
+  proj_rust = "rustls",
+  title    = "Net LOC per Year: openssl vs rustls"
+)
+
+p_libxml <- plot_pair(
+  all_over_time,
+  proj_c   = "libxml2",
+  proj_rust = "nushell",
+  title    = "Net LOC per Year: libxml2 vs nushell"
+)
+```
+```{r}
+p_coreutils
+p_nginx
+p_sqlite
+p_openssl
+p_libxml
+
+```
+
+```{r}
+
+contributors_by_library <- all_commits %>%
+  mutate(date = as.Date(authored_datetime),
+         year = year(date)) %>%
+  group_by(library, year) %>%
+  summarise(
+    contributors = n_distinct(author_name),
+    .groups = "drop"
+  )
+
+```
+
+```{r}
+ggplot(contributors_by_library,
+       aes(x = year, y = contributors, color = library)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "Contributor Trends Over Time by Library",
+    x = "Year",
+    y = "Number of Contributors",
+    color = "Library"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+
+
+```{r}
+contributors_by_language <- all_commits %>%
+  mutate(date = as.Date(authored_datetime),
+         year = year(date)) %>%
+  group_by(language, year) %>%
+  summarise(
+    contributors = n_distinct(author_name),
+    .groups = "drop"
+  )
+
+```
+
+```{r}
+ggplot(contributors_by_language %>% filter(year > 2009),
+       aes(x = year, y = contributors, color = language)) +
+  geom_line(linewidth = 1.3) +
+  geom_point(size = 2.5) +
+  labs(
+    title = "Contributor Trends Over Time by Language",
+    x = "Year",
+    y = "Number of Contributors",
+    color = "Language"
+  ) +
+  scale_color_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  theme_classic(base_size = 14)
+
+```
+```{r}
+
+```
+
+
+```{r}
+
+ggplot(contributors_by_library,
+       aes(x = year, y = library, fill = contributors)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(
+    title = "Contributor Activity Heatmap",
+    x = "Year",
+    y = "Library"
+  ) +
+  theme_minimal()
+
+```
+```{r}
+# commits per library per year
+commits_by_library <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  group_by(library, year) %>%
+  summarise(
+    commits = n(),
+    .groups = "drop"
+  )
+
+commits_by_library <- commits_by_library %>%
+  arrange(language, library) %>%
+  mutate(library = factor(library, levels = unique(library)))
+
+library_order <- all_commits %>%
+  distinct(library, language) %>%
+  arrange(language, library) %>%   # Rust first, then C (alphabetically within each)
+  pull(library)
+
+# heatmap of commit activity
+ggplot(commits_by_library%>%
+    mutate(library = factor(library, levels = library_order)),
+       aes(x = year, y = library, fill = commits)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(
+    title = "Commit Activity Heatmap",
+    x = "Year",
+    y = "Library",
+    fill = "Commits"
+  ) +
+  theme_minimal()
+
+# ---- 1. Define the correct order (Rust first, then C) ----
+library_order <- c(names(rust_dfs), names(c_dfs))
+
+# ---- 2. Heatmap with correct ordering ----
+ggplot(
+  commits_by_library %>% 
+    mutate(library = factor(library, levels = library_order)),
+  aes(x = year, y = library, fill = commits)
+) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(
+    title = "Commit Activity Heatmap",
+    x = "Year",
+    y = "Library",
+    fill = "Commits"
+  ) +
+  theme_minimal()
+
+```
+```{r}
+traffic_by_language <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  group_by(language, year) %>%
+  summarise(
+    contributors = n_distinct(author_name),
+    commits      = n(),                       # <- total commits (traffic)
+    commits_per_contributor = commits / contributors,
+    .groups = "drop"
+  ) %>%
+  mutate( commits_logs = log(commits))
+
+```
+```{r}
+ggplot(traffic_by_language,
+       aes(x = year, y = commits, color = language)) +
+  geom_line(linewidth = 1.3) +
+  geom_point(size = 2.5) +
+  labs(
+    title = "Commit Volume Over Time by Language",
+    x = "Year",
+    y = "Number of Commits",
+    color = "Language"
+  ) +
+  scale_color_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  theme_classic(base_size = 14)
+```
+```{r}
+
+ggplot(traffic_by_language %>% filter(year > 2010),
+       aes(x = year, y = commits_per_contributor, color = language)) +
+  geom_line(linewidth = 1.3) +
+  geom_point(size = 2.5) +
+  labs(
+    title = "Average Commits per Contributor by Language",
+    x = "Year",
+    y = "Commits per Contributor",
+    color = "Language"
+  ) +
+  scale_color_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  theme_classic(base_size = 14)
+
+```
+Commit frequency between rust and C
+## commit frequency = total commits ÷ time period ÷ number of developers
+
+```{r}
+commit_frequency <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  group_by(language, year) %>%
+  summarise(
+    total_commits = n(),
+    developers = n_distinct(author_name),
+    frequency = total_commits / (365 * developers),
+    .groups = "drop"
+  )
+
+```
+
+```{r}
+ggplot(commit_frequency,
+       aes(x = year, y = frequency, fill = language)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Commit Frequency Over Time by Language",
+    subtitle = "Commit frequency = total commits ÷ 12 ÷ number of developers",
+    x = "Year",
+    y = "Commit Frequency (Commits per Developer per Day)",
+    fill = "Language"
+  ) +
+  scale_fill_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  theme_classic(base_size = 14)
+
+```
+```{r}
+ggplot(commit_frequency %>% filter(year > 2009),
+       aes(x = year, y = frequency, color = language)) +
+  geom_line(linewidth = 1.1) +
+  scale_y_log10() +
+  labs(
+    title = "Commit Frequency (Log Scale)",
+    subtitle = "Commits per Developer per Day",
+    x = "Year", y = "Commit Frequency (log10)"
+  ) +
+  scale_color_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  theme_classic(base_size = 14)
+
+```
+
+## code churn rate (lines added + lines removed)
+
+```{r}
+
+churn_by_library_year <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date),
+    churn = lines_added + lines_removed
+  ) %>%
+  group_by(library, year) %>%
+  summarise(
+    total_churn = sum(churn, na.rm = TRUE),
+    avg_churn_per_commit = mean(churn, na.rm = TRUE),
+    commits = n(),
+    .groups = "drop"
+  )
+
+ggplot(churn_by_library_year,
+       aes(x = year, y = total_churn, color = library)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  facet_wrap(~library) +
+  scale_color_viridis_d() +
+  labs(
+    title = "Yearly Code Churn by Library",
+    x = "Year",
+    y = "Total Churn (Lines Added + Removed)",
+    color = "Library"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+```{r}
+churn_by_language_year <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date),
+    churn = lines_added + lines_removed
+  ) %>%
+  group_by(language, year) %>%
+  summarise(
+    total_churn = sum(churn, na.rm = TRUE),
+    avg_churn_per_commit = mean(churn, na.rm = TRUE),
+    commits = n(),
+    .groups = "drop"
+  )
+
+ggplot(churn_by_language_year %>% filter(year > 2010),
+       aes(x = year, y = total_churn, color = language)) +
+  geom_line(size = 1.4) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  labs(
+    title = "Churn Over Time: C vs Rust Libraries",
+    x = "Year",
+    y = "Total Churn",
+    color = "Language"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+```
+
+
+
+
+##author concentration ( 3 authors are responsible for top something of the code)
+
+```{r}
+author_concentration <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  # commits per author per library-year
+  count(library, year, author_name, name = "commits") %>%
+  group_by(library, year) %>%
+  # sort contributors by commits *within each library-year*
+  arrange(desc(commits), .by_group = TRUE) %>%
+  mutate(rank = row_number()) %>%
+  summarise(
+    total_commits  = sum(commits),
+    n_contributors = n(),  # number of contributors that year for that library
+
+    # share of commits accounted for by top 1 / 3 / 5 contributors
+    top1_pct = sum(commits[rank <= 1]) / total_commits * 100,
+    top3_pct = sum(commits[rank <= 3]) / total_commits * 100,
+    top5_pct = sum(commits[rank <= 5]) / total_commits * 100,
+
+    .groups = "drop"
+  )
+
+
+```
+
+```{r}
+library(tidyr)
+
+author_conc_long <- author_concentration %>%
+  pivot_longer(cols = c(top1_pct, top3_pct, top5_pct),
+               names_to = "rank_group",
+               values_to = "percent")
+
+ggplot(author_conc_long,
+       aes(x = year, y = percent, color = rank_group)) +
+  geom_line(size = 1.2) +
+  geom_point() +
+  facet_wrap(~ library, scales = "free_y") +
+  labs(
+    title = "Author Concentration by Library",
+    x = "Year",
+    y = "% of Commits"
+  ) +
+  scale_color_manual(values = c(
+    "top1_pct" = "firebrick2",
+    "top3_pct" = "goldenrod",
+    "top5_pct" = "steelblue"
+  )) +
+  theme_minimal(base_size = 14)
+
+```
+
+```{r}
+gini <- function(x) {
+  x <- sort(x)
+  n <- length(x)
+  G <- sum((2 * seq_along(x) - n - 1) * x)
+  G / (n * sum(x))
+}
+
+```
+
+```{r}
+gini_by_library_year <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  # commits per contributor per library-year
+  count(library, year, author_name, name = "commits") %>%
+  group_by(library, year) %>%
+  summarise(
+    gini = gini(commits),
+    n_contributors = n(),
+    total_commits = sum(commits),
+    .groups = "drop"
+  )
+```
+
+```{r}
+ggplot(gini_by_library_year,
+       aes(x = year, y = gini, color = library)) +
+  geom_line(size = 1.2) +
+  geom_point() +
+  scale_color_viridis_d() +
+  facet_wrap(~library)+
+  labs(
+    title = "Contributor Inequality (Gini Coefficient) Over Time",
+    x = "Year",
+    y = "Gini Coefficient\n(1 = highly unequal)"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+```{r}
+gini_by_language <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  count(language, year, author_name, name = "commits") %>%
+  group_by(language, year) %>%
+  summarise(
+    gini = gini(commits),
+    n_contributors = n(),
+    .groups = "drop"
+  )
+
+```
+```{r}
+ggplot(gini_by_language,
+       aes(x = language, y = gini, fill = language)) +
+  geom_violin(alpha = 0.7, trim = FALSE) +
+  geom_jitter(width = 0.1, alpha = 0.5) +
+  scale_fill_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  labs(
+    title = "Contributor Inequality by Language",
+    x = "Language",
+    y = "Gini Coefficient"
+  ) +
+  theme_minimal(base_size = 15)
+
+```
+
+```{r}
+
+# Gini function
+gini <- function(x) {
+  x <- sort(x)
+  n <- length(x)
+  G <- sum((2 * seq_along(x) - n - 1) * x)
+  G / (n * sum(x))
+}
+
+gini_by_language_year <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  count(language, year, author_name, name = "commits") %>%  # commits per contributor
+  group_by(language, year) %>%
+  summarise(
+    gini = gini(commits),
+    n_contributors = n_distinct(author_name),
+    .groups = "drop"
+  )
+
+
+ggplot(gini_by_language_year,
+       aes(x = year, y = gini, color = language, group = language)) +
+  geom_line(size = 1.4) +
+  geom_point(size = 2.5) +
+  scale_color_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  labs(
+    title = "Contributor Inequality (Gini) Over Time by Language",
+    x = "Year",
+    y = "Gini Coefficient",
+    color = "Language"
+  ) +
+  theme_minimal(base_size = 15) +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5)
+  )
+```
+##
+A change = all commits made by the same author to the same library on the same day.
+## Revisions per change = number of commits in that change.
+
+```{r}
+changes <- all_commits %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date),
+    change_size = lines_added + lines_removed
+  ) %>%
+  group_by(language, library, author_name, date) %>%
+  summarise(
+    revisions = n(),                     # commits within this change
+    total_loc = sum(change_size),        # size of the change in LOC
+    year = first(year),
+    .groups = "drop"
+  )
+```
+```{r}
+rpc_language_year <- changes %>%
+  group_by(language, year) %>%
+  summarise(
+    avg_revisions = mean(revisions),
+    n_changes = n(),
+    .groups = "drop"
+  )
+
+```
+```{r}
+ggplot(rpc_language_year %>% filter (year > 2012),
+       aes(x = factor(year), y = avg_revisions, fill = language)) +
+  geom_col(position = "dodge") +
+  scale_fill_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  labs(
+    title = "Revisions Per Change by Language",
+    subtitle = "Average number of revisions per change",
+    x = "Year",
+    y = "Revisions Per Change",
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "top"
+  )
+
+```
+
+## 
+A change = all commits made by the same author to the same file in the same library on the same day
+Revisions per change = number of commits in that change
+
+```{r}
+extract_file_level <- function(df) {
+  df %>%
+    # drop rows with missing diffs just in case
+    filter(!is.na(diff)) %>%
+    # split each commit's diff into file-level chunks
+    mutate(file_chunks = str_split(diff, "diff --git")) %>%
+    select(-diff) %>%                      # keep other columns (author, datetime, etc.)
+    unnest(file_chunks) %>%
+    # keep only real file patches (must have +++ b/...)
+    filter(str_detect(file_chunks, "\\+\\+\\+ b/")) %>%
+    mutate(
+      file = str_extract(file_chunks, "(?<=\\+\\+\\+ b/)[^\\s]+"),
+      lines_added = str_count(
+        file_chunks,
+        regex("^\\+(?!\\+\\+)(?!\\s*@@).+", multiline = TRUE)
+      ),
+      lines_removed = str_count(
+        file_chunks,
+        regex("^\\-(?!\\-)(?!\\s*@@).+", multiline = TRUE)
+      )
+    ) %>%
+    select(-file_chunks)   # drop the big text column if you don’t need it anymore
+}
+
+```
+```{r}
+# C file-level commits
+file_level_c <- imap_dfr(
+  c_dfs,
+  ~ extract_file_level(.x) %>%
+    mutate(library = .y, language = "C")
+)
+
+# Rust file-level commits
+file_level_rust <- imap_dfr(
+  rust_dfs,
+  ~ extract_file_level(.x) %>%
+    mutate(library = .y, language = "Rust")
+)
+
+# Combine
+file_level <- bind_rows(file_level_c, file_level_rust)
+
+dplyr::glimpse(file_level)
+
+```
+
+```{r}
+changes <- file_level %>%
+  mutate(
+    date = as.Date(authored_datetime),
+    year = year(date)
+  ) %>%
+  group_by(language, library, author_name, file, date) %>%
+  summarise(
+    revisions = n(),         # commits to that file by that author on that day
+    year = first(year),
+    .groups = "drop"
+  )
+```
+
+
+```{r}
+rpc_language_year <- changes %>%
+  group_by(language, year) %>%
+  summarise(
+    avg_revisions = mean(revisions),
+    n_changes     = n(),
+    .groups       = "drop"
+  )
+
+rpc_language_year
+
+```
+```{r}
+library(ggplot2)
+
+ggplot(rpc_language_year,
+       aes(x = factor(year), y = avg_revisions, fill = language)) +
+  geom_col(position = "dodge") +
+  scale_fill_manual(values = c("C" = "firebrick2", "Rust" = "royalblue3")) +
+  labs(
+    title = "Revisions Per Change (File-Level) by Language",
+    subtitle = "Change = commits by same author to same file in same library on same day",
+    x = "Year",
+    y = "Average Revisions per Change",
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "top",
+    plot.title = element_text(face = "bold")
+  )
+
+```
+

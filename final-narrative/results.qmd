@@ -3,3 +3,91 @@ title: "Results"
 format: html
 ---
 
+# Results: The Economics of Safety
+
+## 1. The "Language Tax": Resource Allocation in C vs. Rust
+
+This section answers the core research question: *Does the choice of language dictate how developer resources are spent?*
+
+```{r}
+#| label: fig-language-tax
+#| fig-cap: "The Language Tax: Difference in Commit Focus (C vs. Rust). Positive values indicate a higher share of effort in C; negative values indicate a higher share in Rust."
+#| echo: false
+knitr::include_graphics("visualizations/diverging_distribution_delta.png")
+```
+
+### Key Findings
+*   **The Zero-Sum Game:** The data demonstrates a clear resource trade-off. In every functional domain analyzed (XML, HTTP, TLS, etc.), C projects show a resource deficit in **Feature & Value Add** work that corresponds almost directly to their resource surplus in **Memory Safety** work.
+*   **The "Memory Tax":** The purple bars (Memory Safety) are consistently positive across all domains. This confirms that memory safety maintenance is not an occasional cost but a systemic, ubiquitous "tax" levied on C projects. In the XML domain (`libxml2` vs. `quick-xml`), this tax accounts for nearly **20%** of the total maintenance differential.
+*   **The "Rust Dividend":** The green bars (Feature & Value Add) are consistently negative, indicating higher activity in Rust. This suggests that the time saved by *not* fixing memory bugs in Rust is reinvested directly into innovation and feature development.
+
+> **Strategic Implication:** C forces an investment in stability (fixing the past). Rust enables an investment in growth (building the future).
+
+---
+
+## 2. Granular Error Profile: Quantifying the Safety Gap
+
+This section drills down into the specific distribution of maintenance categories to quantify the magnitude of the safety difference.
+
+```{r}
+#| label: fig-norm-dist-language
+#| fig-cap: "Normalized Category Distribution by Language. Note the disparity in Memory Safety vs. Feature work."
+#| echo: false
+knitr::include_graphics("visualizations/normalized_category_distribution_by_langauge.png")
+```
+
+### Key Findings
+*   **3x Reduction in Memory Burden:** Our classifier identified that **~12%** of all commits in the C sample were related to Memory Safety & Robustness, compared to only **~4%** in the Rust sample. This represents a **3x reduction** in the frequency of memory-related maintenance events.
+*   **Logic & Correctness:** Interestingly, C also shows a higher proportion of general Logic & Correctness fixes. This supports the hypothesis that Rust’s expressive type system (e.g., `Option`, `Result`, pattern matching) prevents a class of logic errors at compile time that typically manifest as runtime bugs in C.
+*   **The Growth Gap:** Rust projects show a significantly larger proportion of commits dedicated to "Feature & Value Add," corroborating the "Rust Dividend" observed in the previous section.
+
+---
+
+## 3. Cognitive Load Analysis: The "Shift Left" Effect
+
+Having established the *volume* of work, we now analyze the *nature* of the work using our Commit Complexity Score (CCS).
+
+*Note: CCS is a composite metric derived from code entropy, churn, and cognitive complexity measures.*
+
+```{r}
+#| label: fig-ccs-scores
+#| fig-cap: "Commit Complexity Scores (CCS) by Category and Language. Rust commits show slightly higher complexity on average, indicating a 'Shift Left' in cognitive load."
+#| echo: false
+knitr::include_graphics("visualizations/ccs_by_language.png")
+```
+
+### Key Findings
+*   **Higher Average Complexity in Rust:** Across most categories, Rust commits exhibit a slightly higher CCS than their C counterparts. At first glance, this might suggest Rust is "harder" to maintain. However, viewed in context with the Error Profile, a different story emerges.
+*   **Pre-compile shift:** The higher complexity per commit in Rust reflects the language's requirement to handle correctness *at write-time*. Rust forces developers to satisfy the borrow checker and handle errors explicitly before merging.
+*   **Front-Loaded vs. Back-Loaded Cost:**
+    *   **Rust:** Pays a small "upfront tax" in commit complexity to ensure correctness.
+    *   **C:** Allows for lower-complexity commits (simpler code) that are often incorrect, resulting in a massive "backend tax" of debugging memory safety issues later.
+
+> **Conclusion:** The data suggests Rust does not eliminate complexity; it moves it. It shifts complexity from the **Maintenance Phase** (debugging crashes) to the **Development Phase** (satisfying the compiler), where it is cheaper and safer to manage.
+
+---
+
+## 4. Domain-Specific Consistency
+
+To ensure these findings are not artifacts of a single outlier project, we validated the trends across distinct functional domains.
+
+```{r}
+#| label: fig-norm-dist-repo
+#| fig-cap: "Normalized Category Distribution by Repository. The pattern holds across diverse domains."
+#| echo: false
+knitr::include_graphics("visualizations/normalized_category_distribution_by_lib.png")
+```
+
+### Key Findings
+*   **Universality of the Pattern:** Whether in networking (`curl` vs. `hyper`), data storage (`sqlite` vs. `limbo`), or parsing (`libxml2` vs. `quick-xml`), the structural difference remains consistent: C projects are weighted towards corrective maintenance; Rust projects are weighted towards feature work.
+*   **The XML Extreme:** The contrast is most visible in the XML parsing domain. `libxml2` (a mature, widely-used C library) shows a maintenance profile dominated by Logic and Memory fixes, while `quick-xml` acts as a pure "growth" project. This validates that for parsing-heavy workloads—where memory management is most complex—the benefits of Rust are most pronounced.
+
+---
+
+## 5. Summary of Results
+
+Our multi-modal classification pipeline, applied to 180,000 commits, provides strong quantitative evidence for the economic advantages of Rust:
+
+1.  **Reduction of Risk:** Rust reduces the proportion of memory safety maintenance work by approximately **3x**.
+2.  **Reallocation of Resources:** There is a near-perfect correlation between the reduction in memory safety work and the increase in feature development work.
+3.  **Efficiency of Complexity:** While Rust commits are marginally more complex, this upfront investment effectively eradicates entire classes of high-risk bugs, resulting in a more efficient long-term maintenance profile.

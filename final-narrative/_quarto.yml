@@ -16,8 +16,11 @@ website:
         href: limitations.qmd
       - text: "Contributions"
         href: contributions.qmd
+      - text: "Expert Feedback"
+        href: feedback.qmd
       - text: "Appendix"
         href: appendix.qmd
+     
 
 format:
   html:

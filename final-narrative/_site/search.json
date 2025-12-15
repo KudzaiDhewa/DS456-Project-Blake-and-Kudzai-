@@ -1,0 +1,93 @@
+[
+  {
+    "objectID": "data.html#library-selection",
+    "href": "data.html#library-selection",
+    "title": "Data Sources and Preparation",
+    "section": "0.1 Library Selection",
+    "text": "0.1 Library Selection\nFor our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.\nBecause C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development lifecycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.\nThe table below shows the libraries we choose."
+  },
+  {
+    "objectID": "data.html#data-sources-and-acquisition",
+    "href": "data.html#data-sources-and-acquisition",
+    "title": "Data Sources and Preparation",
+    "section": "0.2 Data Sources and Acquisition",
+    "text": "0.2 Data Sources and Acquisition\nFor each library in our sample, we retrieved the complete commit history from its official GitHub repository using the GitHub REST API. GitHub was chosen as the data source because it provides standardized, time-stamped records of development activity across projects and is the primary collaboration platform for all libraries in our sample.\nEach commit record includes:\n\nA unique commit identifier\nA textual commit message describing the change\nA commit diff summarizing code changes\nThe author of the commit\nA timestamp indicating when the commit was authored\n\nThese commit-level records form the core dataset used in our analysis. An individual row in the dataset corresponds to a single commit made to a given library."
+  },
+  {
+    "objectID": "data.html#key-variables",
+    "href": "data.html#key-variables",
+    "title": "Data Sources and Preparation",
+    "section": "0.3 Key Variables",
+    "text": "0.3 Key Variables\nThe table below describes the primary variables extracted from the Github commit data\n\n\n\n\n\n\n\n\nVariable\nDescription\nType\n\n\n\n\ncommit_diff\nTextual summary of code changes associated with a commit, including files changed and lines added or removed\nText (semi-structured)\n\n\ncommit_message\nFree-text message describing the purpose or intent of the commit\nText\n\n\ntimestamp\nDate and time when the commit was authored\nDatetime\n\n\nauthor\nUsername or identifier of the contributor who authored the commit\nCategorical\n\n\nlibrary\nName of the open-source library associated with the commit\nCategorical\n\n\nlanguage\nProgramming language of the library (C or Rust)\nCategorical\n\n\n\nTable to summarise data real quick\nLibrary | Number of commits | Date range | Average commits per year"
+  },
+  {
+    "objectID": "data.html#data-cleaning",
+    "href": "data.html#data-cleaning",
+    "title": "Data Sources and Preparation",
+    "section": "0.4 Data Cleaning",
+    "text": "0.4 Data Cleaning\nExplain: - Missing data handling - Filtering - Transformations - Feature engineering - Joins between datasets\n\n\nCode\n# Example: show one clean pipeline, folded by default"
+  },
+  {
+    "objectID": "data.html#commit-classification-using-large-language-models",
+    "href": "data.html#commit-classification-using-large-language-models",
+    "title": "Data Sources and Preparation",
+    "section": "1.1 Commit Classification Using Large Language Models",
+    "text": "1.1 Commit Classification Using Large Language Models\nTo distinguish between different types of development activity, we classified each commit as either maintenance-oriented or feature-oriented based on its commit message and diff. Maintenance commits include bug fixes, refactoring, performance improvements, and dependency updates, while feature commits introduce new functionality or expand existing capabilities.\nThis classification was performed using a large language model (LLM), which was prompted with the commit message and a summarized diff. In addition to categorical classification, the LLM was asked to assign a relative complexity score reflecting the estimated effort required to complete the task represented by the commit."
+  },
+  {
+    "objectID": "data.html#llm-configuration",
+    "href": "data.html#llm-configuration",
+    "title": "Data Sources and Preparation",
+    "section": "1.2 LLM Configuration",
+    "text": "1.2 LLM Configuration\nModel used: [Specify model]\nPrompt structure: [Brief description or example]\nOutput: Commit type (maintenance vs. feature) and complexity score"
+  },
+  {
+    "objectID": "data.html#validation",
+    "href": "data.html#validation",
+    "title": "Data Sources and Preparation",
+    "section": "1.3 Validation",
+    "text": "1.3 Validation\nTo assess classification reliability, a subset of commits was manually reviewed and compared against the LLM’s outputs. Disagreements were examined qualitatively to identify systematic errors or ambiguities. While LLM-based classification introduces some subjectivity, it enables consistent interpretation of free-text commit messages at scale and provides a practical approach for large-scale maintenance analysis."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n\nCode\n1 + 1\n\n\n[1] 2"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Maintenance Burden Estimation: A comparative study between C and Rust Open Source Packages",
+    "section": "",
+    "text": "Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C.\n\n As a broader research topic to try and help him answer this question we decided to try and estimate the maintenance burden of C libraries versus Rust libraries with hope that our data centric results will help the expert make a more informed decision.\nC is a mature systems programming language that originated in the 1970s, and Rust is a much younger language with performance comparable to C that began development in the 2010s. Rust is widely recognized for being more memory safe than C because its compiler enforces strict rules about how memory is used, preventing many common memory errors before the code even runs. In contrast, C allows unrestricted memory access, meaning the compiler will happily build programs even if they contain unsafe memory operations, leaving it up to the programmer to catch mistakes. As a result, there is a general consensus that programmers make fewer memory-related errors when coding in Rust compared to C because Rust’s guardrails catch many mistakes at compile time, whereas C provides almost no such protections. Memory safety is important because most serious software bugs come from memory errors such as security vulnerabilities, crashers, corrupted data. To learn more about memory safety and the differences between Rust and C reference this article: [What Makes Rust Safer Than C] (https://knathanael.com/posts/what_makes_rust_safer_than_c/)\nThis information is important because it informs our initial hypothesis that rust allows less mistakes in the development phase than C and therefore requires less maintenance than C in the long run."
+  },
+  {
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "Maintenance Burden Estimation: A comparative study between C and Rust Open Source Packages",
+    "section": "",
+    "text": "Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C.\n\n As a broader research topic to try and help him answer this question we decided to try and estimate the maintenance burden of C libraries versus Rust libraries with hope that our data centric results will help the expert make a more informed decision.\nC is a mature systems programming language that originated in the 1970s, and Rust is a much younger language with performance comparable to C that began development in the 2010s. Rust is widely recognized for being more memory safe than C because its compiler enforces strict rules about how memory is used, preventing many common memory errors before the code even runs. In contrast, C allows unrestricted memory access, meaning the compiler will happily build programs even if they contain unsafe memory operations, leaving it up to the programmer to catch mistakes. As a result, there is a general consensus that programmers make fewer memory-related errors when coding in Rust compared to C because Rust’s guardrails catch many mistakes at compile time, whereas C provides almost no such protections. Memory safety is important because most serious software bugs come from memory errors such as security vulnerabilities, crashers, corrupted data. To learn more about memory safety and the differences between Rust and C reference this article: [What Makes Rust Safer Than C] (https://knathanael.com/posts/what_makes_rust_safer_than_c/)\nThis information is important because it informs our initial hypothesis that rust allows less mistakes in the development phase than C and therefore requires less maintenance than C in the long run."
+  },
+  {
+    "objectID": "index.html#research-questions",
+    "href": "index.html#research-questions",
+    "title": "Maintenance Burden Estimation: A comparative study between C and Rust Open Source Packages",
+    "section": "2 Research Questions",
+    "text": "2 Research Questions\n**RQ1:**\nIs the maintenance burden of open-source systems libraries lower for projects written in Rust compared to those written in C?\n**RQ2:** Explain how this builds on RQ1 or addresses a related gap."
+  },
+  {
+    "objectID": "index.html#why-this-matters",
+    "href": "index.html#why-this-matters",
+    "title": "Maintenance Burden Estimation: A comparative study between C and Rust Open Source Packages",
+    "section": "3 Why This Matters",
+    "text": "3 Why This Matters\nThis matters because it directly influences our expert’s decision of migrating the libxml2 library from C to Rust."
+  },
+  {
+    "objectID": "limitations.html",
+    "href": "limitations.html",
+    "title": "",
+    "section": "",
+    "text": "Code"
+  }
+]

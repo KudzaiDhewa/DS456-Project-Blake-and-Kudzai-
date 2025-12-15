@@ -1,0 +1,30 @@
+---
+title: "Maintenance Burden Estimation: A comparative study between C and Rust Open Source Packages"
+author: "Blake Kell, Kudzai Dhewa"
+date: last-modified
+---
+
+## Overview
+
+Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C. 
+---
+
+![](images/Image 12-12-25 at 7.30 PM-01.jpeg)
+As a broader research topic to try and help him answer this question we decided to try and estimate the maintenance burden of C libraries versus Rust libraries with hope that our data centric results will help the expert make a more informed decision.
+
+C is a mature systems programming language that originated in the 1970s, and Rust is a much younger language with performance comparable to C that began development in the 2010s. Rust is widely recognized for being more memory safe than C because its compiler enforces strict rules about how memory is used, preventing many common memory errors before the code even runs. In contrast, C allows unrestricted memory access, meaning the compiler will happily build programs even if they contain unsafe memory operations, leaving it up to the programmer to catch mistakes. As a result, there is a general consensus that programmers make fewer memory-related errors when coding in Rust compared to C because Rust’s guardrails catch many mistakes at compile time, whereas C provides almost no such protections. Memory safety is important because most serious software bugs come from memory errors such as security vulnerabilities, crashers, corrupted data. To learn more about memory safety and the differences between Rust and C reference this article: \[What Makes Rust Safer Than C\] (https://knathanael.com/posts/what_makes_rust_safer_than_c/)
+
+This information is important because it informs our initial hypothesis that rust allows less mistakes in the development phase than C and therefore requires less maintenance than C in the long run.
+
+## Research Questions
+
+\*\*RQ1:\*\*
+
+Is the maintenance burden of open-source systems libraries lower for projects written in Rust compared to those written in C?
+
+\*\*RQ2:\*\*
+Explain how this builds on RQ1 or addresses a related gap.
+
+## Why This Matters
+
+This matters because it directly influences our expert's decision of migrating the libxml2 library from C to Rust.

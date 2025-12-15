@@ -11,3 +11,4 @@ __pycache__/
 # Generated data
 data/
 analysis_ready_data.csv
+.Rproj.user

@@ -1,0 +1,94 @@
+---
+title: "Data Sources and Preparation"
+---
+
+
+### image of the data pipeline and methodology
+
+## Library Selection
+
+For our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.
+
+Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development lifecycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.
+
+The table below shows the libraries we choose.
+
+
+
+## Data Sources and Acquisition
+
+For each library in our sample, we retrieved the complete commit history from its official GitHub repository using the GitHub REST API. GitHub was chosen as the data source because it provides standardized, time-stamped records of development activity across projects and is the primary collaboration platform for all libraries in our sample.
+
+Each commit record includes:
+
+  - A unique commit identifier
+
+  - A textual commit message describing the change
+
+  - A commit diff summarizing code changes
+
+  - The author of the commit
+
+  - A timestamp indicating when the commit was authored
+
+These commit-level records form the core dataset used in our analysis. An individual row in the dataset corresponds to a single commit made to a given library.
+
+## Key Variables
+
+The table below describes the primary variables extracted from the Github commit data
+
+| Variable          | Description                                                                 | Type                  |
+|-------------------|-----------------------------------------------------------------------------|-----------------------|
+| `commit_diff`     | Textual summary of code changes associated with a commit, including files changed and lines added or removed | Text (semi-structured) |
+| `commit_message`  | Free-text message describing the purpose or intent of the commit            | Text                  |
+| `timestamp`       | Date and time when the commit was authored                                  | Datetime              |
+| `author`          | Username or identifier of the contributor who authored the commit           | Categorical           |
+| `library`         | Name of the open-source library associated with the commit                  | Categorical           |
+| `language`        | Programming language of the library (C or Rust)                             | Categorical           |
+
+
+
+
+Table to summarise data real quick
+
+Library | Number of commits | Date range | Average commits per year
+
+
+
+
+
+
+
+## Data Cleaning
+
+Explain:
+- Missing data handling
+- Filtering
+- Transformations
+- Feature engineering
+- Joins between datasets
+
+```{r}
+# Example: show one clean pipeline, folded by default
+```
+
+
+# Data Processing
+
+## Commit Classification Using Large Language Models
+
+To distinguish between different types of development activity, we classified each commit as either maintenance-oriented or feature-oriented based on its commit message and diff. Maintenance commits include bug fixes, refactoring, performance improvements, and dependency updates, while feature commits introduce new functionality or expand existing capabilities.
+
+This classification was performed using a large language model (LLM), which was prompted with the commit message and a summarized diff. In addition to categorical classification, the LLM was asked to assign a relative complexity score reflecting the estimated effort required to complete the task represented by the commit.
+
+## LLM Configuration
+
+Model used: [Specify model]
+
+Prompt structure: [Brief description or example]
+
+Output: Commit type (maintenance vs. feature) and complexity score
+
+## Validation
+
+To assess classification reliability, a subset of commits was manually reviewed and compared against the LLM’s outputs. Disagreements were examined qualitatively to identify systematic errors or ambiguities. While LLM-based classification introduces some subjectivity, it enables consistent interpretation of free-text commit messages at scale and provides a practical approach for large-scale maintenance analysis.

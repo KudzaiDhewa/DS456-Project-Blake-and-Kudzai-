@@ -1,0 +1,30 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Project Title Here"
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Data"
+        href: data.qmd
+      - text: "Results"
+        href: results.qmd
+      - text: "Limitations"
+        href: limitations.qmd
+      - text: "Contributions"
+        href: contributions.qmd
+      - text: "Appendix"
+        href: appendix.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-location: right
+    code-fold: true
+    code-tools: true
+    number-sections: true
+    df-print: paged

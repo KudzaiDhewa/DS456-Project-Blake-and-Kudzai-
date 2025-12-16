@@ -19,12 +19,13 @@ This information is important because it informs our initial hypothesis that rus
 
 ## Research Questions
 
-\*\*RQ1:\*\*
+**RQ1:**
 
-Is the maintenance burden of open-source systems libraries lower for projects written in Rust compared to those written in C?
+Is the maintenance burden of open-source libraries lower for projects written in Rust compared to those written in C?
 
-\*\*RQ2:\*\*
-Explain how this builds on RQ1 or addresses a related gap.
+**RQ2:**
+
+What maintenance activities are most common in C vs Rust open source libraries?
 
 ## Why This Matters
 

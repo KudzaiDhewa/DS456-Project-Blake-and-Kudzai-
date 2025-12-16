@@ -9,10 +9,47 @@ title: "Data Sources and Preparation"
 
 For our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.
 
-Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development lifecycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.
+Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development life cycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.
 
 The table below shows the libraries we choose.
 
+```{r, warning = FALSE, message = FALSE}
+
+commits <- read.csv("Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv")
+library(dplyr)
+```
+
+```{r, warning = FALSE, message = FALSE}
+library_summary <- commits %>%
+  filter(!is.na(year)) %>%
+  group_by(language, repo) %>%
+  summarise(
+    total_commits = n(),
+    min_year = min(year),
+    max_year = max(year),
+    year_range = paste0(min_year, "–", max_year),
+    avg_commits_per_year = round(
+      total_commits / (max_year - min_year + 1),
+      2
+    ),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_commits)) %>%
+  slice_head(n = 9) %>%
+  select(language, repo, total_commits, year_range, avg_commits_per_year)
+
+knitr::kable(
+  library_summary,
+  caption = "Commit Activity by Language and Repository",
+  col.names = c(
+    "Language",
+    "Repository",
+    "Total Commits",
+    "Year Range",
+    "Avg. Commits / Year"
+  )
+)
+```
 
 
 ## Data Sources and Acquisition
@@ -48,14 +85,11 @@ The table below describes the primary variables extracted from the Github commit
 
 
 
+```{r}
+#| code-fold: true
 
-Table to summarise data real quick
-
-Library | Number of commits | Date range | Average commits per year
-
-
-
-
+commits <- read.csv("Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv")
+```
 
 
 

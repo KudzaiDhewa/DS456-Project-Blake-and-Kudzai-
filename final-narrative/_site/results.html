@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Results – Project Title Here</title>
+<title>Results – C vs Rust</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -100,6 +100,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 </head>
@@ -112,7 +114,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Project Title Here</span>
+    <span class="navbar-title">C vs Rust</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -160,8 +162,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-are-developers-focusing-on-maintenance-feature" id="toc-what-are-developers-focusing-on-maintenance-feature" class="nav-link active" data-scroll-target="#what-are-developers-focusing-on-maintenance-feature"><span class="header-section-number">1</span> 1. What are developers focusing on (Maintenance /Feature)</a>
+  <ul class="collapse">
+  <li><a href="#key-findings" id="toc-key-findings" class="nav-link" data-scroll-target="#key-findings"><span class="header-section-number">1.1</span> Key Findings</a></li>
+  </ul></li>
+  <li><a href="#quantifying-the-memory-safety-gap" id="toc-quantifying-the-memory-safety-gap" class="nav-link" data-scroll-target="#quantifying-the-memory-safety-gap"><span class="header-section-number">2</span> 2. Quantifying the Memory Safety Gap</a>
+  <ul class="collapse">
+  <li><a href="#key-findings-1" id="toc-key-findings-1" class="nav-link" data-scroll-target="#key-findings-1"><span class="header-section-number">2.1</span> Key Findings</a></li>
+  </ul></li>
+  <li><a href="#cognitive-load-analysis-the-shift-left-effect" id="toc-cognitive-load-analysis-the-shift-left-effect" class="nav-link" data-scroll-target="#cognitive-load-analysis-the-shift-left-effect"><span class="header-section-number">3</span> 3. Cognitive Load Analysis: The “Shift Left” Effect</a>
+  <ul class="collapse">
+  <li><a href="#key-findings-2" id="toc-key-findings-2" class="nav-link" data-scroll-target="#key-findings-2"><span class="header-section-number">3.1</span> Key Findings</a></li>
+  </ul></li>
+  <li><a href="#domain-specific-consistency" id="toc-domain-specific-consistency" class="nav-link" data-scroll-target="#domain-specific-consistency"><span class="header-section-number">4</span> 4. Domain-Specific Consistency</a>
+  <ul class="collapse">
+  <li><a href="#key-findings-3" id="toc-key-findings-3" class="nav-link" data-scroll-target="#key-findings-3"><span class="header-section-number">4.1</span> Key Findings</a></li>
+  </ul></li>
+  <li><a href="#summary-of-results" id="toc-summary-of-results" class="nav-link" data-scroll-target="#summary-of-results"><span class="header-section-number">5</span> 5. Summary of Results</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -185,10 +209,136 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="what-are-developers-focusing-on-maintenance-feature" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="what-are-developers-focusing-on-maintenance-feature"><span class="header-section-number">1</span> 1. What are developers focusing on (Maintenance /Feature)</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-language-tax" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-language-tax-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualizations/diverging_distribution_delta.png" class="img-fluid figure-img" width="2100">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-language-tax-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Difference in Commit Focus (C vs.&nbsp;Rust). Positive values indicate a higher share of effort in C; negative values indicate a higher share in Rust. All categories in the visualization are Maintenance except ‘Feature &amp; Value Add’
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="key-findings" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="key-findings"><span class="header-section-number">1.1</span> Key Findings</h3>
+<ul>
+<li>The data demonstrates a clear resource trade-off. In every functional domain analyzed (XML, HTTP, TLS, etc.), C projects show a deficit in <strong>Feature &amp; Value Add</strong> work that corresponds almost directly to their surplus in Maintenance work</li>
+<li>The purple bars (Memory Safety) are consistently positive across all domains. This confirms that memory safety maintenance is a more common occurrence on C projects. In the XML domain (<code>libxml2</code> vs.&nbsp;<code>quick-xml</code>), this tax accounts for nearly <strong>20%</strong> of the total maintenance differential.</li>
+<li>The Rust divident: The green bars (Feature &amp; Value Add) are consistently negative, indicating higher activity in Rust. This suggests that the time saved by <em>not</em> fixing memory bugs in Rust is reinvested directly into innovation and feature development.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Strategic Implication:</strong> C forces a focus fixing the past Memory safety issues and other forms of maintenance whereas Rust enables a focus on growth and adding newer features.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="quantifying-the-memory-safety-gap" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="quantifying-the-memory-safety-gap"><span class="header-section-number">2</span> 2. Quantifying the Memory Safety Gap</h2>
+<p>This section drills down into the specific distribution of maintenance categories to quantify the magnitude of the safety difference.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-norm-dist-language" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-norm-dist-language-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualizations/normalized_category_distribution_by_langauge.png" class="img-fluid figure-img" width="400">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-norm-dist-language-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Normalized Category Distribution by Language. Note the disparity in Memory Safety vs.&nbsp;Feature work.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="key-findings-1" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="key-findings-1"><span class="header-section-number">2.1</span> Key Findings</h3>
+<ul>
+<li><strong>3x Reduction in Memory Burden:</strong> Our classifier identified that <strong>~12%</strong> of all commits in the C sample were related to Memory Safety &amp; Robustness, compared to only <strong>~4%</strong> in the Rust sample. This represents a <strong>3x reduction</strong> in the frequency of memory-related maintenance events.</li>
+<li><strong>Logic &amp; Correctness:</strong> Interestingly, C also shows a higher proportion of general Logic &amp; Correctness fixes. This supports the hypothesis that Rust’s expressive type system (e.g., <code>Option</code>, <code>Result</code>, pattern matching) prevents a class of logic errors at compile time that typically manifest as runtime bugs in C.</li>
+<li><strong>The Growth Gap:</strong> Rust projects show a significantly larger proportion of commits dedicated to “Feature &amp; Value Add,” corroborating the “Rust Dividend” observed in the previous section.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="cognitive-load-analysis-the-shift-left-effect" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="cognitive-load-analysis-the-shift-left-effect"><span class="header-section-number">3</span> 3. Cognitive Load Analysis: The “Shift Left” Effect</h2>
+<p>Having established the <em>volume</em> of work, we now analyze the <em>nature</em> of the work using our Commit Complexity Score (CCS).</p>
+<p><em>Note: CCS is a composite metric derived from code entropy (the number of files affected , churn (number of lines changed) , and amount of cognitive complexity (understand required to carry out that type of maintenance: used LLM to get the cognitive complexity score)</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ccs-scores" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ccs-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualizations/ccs_by_language.png" class="img-fluid figure-img" width="500">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ccs-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Commit Complexity Scores (CCS) by Language. Rust commits show slightly higher complexity on average, indicating a ‘Shift Left’ in cognitive load.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="key-findings-2" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="key-findings-2"><span class="header-section-number">3.1</span> Key Findings</h3>
+<ul>
+<li><strong>Higher Average Complexity in Rust:</strong> Rust commits exhibit a slightly higher CCS than their C counterparts. At first glance, this might suggest Rust is “harder” to maintain. However, viewed in context with the Error Profile, a different story emerges.</li>
+<li><strong>Pre-compile shift:</strong> The higher complexity per commit in Rust reflects the language’s requirement to handle correctness <em>at write-time</em>. Rust forces developers to satisfy the borrow checker and handle errors explicitly before merging.</li>
+<li><strong>Front-Loaded vs.&nbsp;Back-Loaded Cost:</strong>
+<ul>
+<li><strong>Rust:</strong> Pays a small “upfront tax” in commit complexity to ensure correctness.</li>
+<li><strong>C:</strong> Allows for lower-complexity commits (simpler code) that are often incorrect, resulting in a massive “backend tax” of debugging memory safety issues later.</li>
+</ul></li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Conclusion:</strong> The data suggests Rust does not eliminate complexity; it moves it. It shifts complexity from the <strong>Maintenance Phase</strong> (debugging crashes) to the <strong>Development Phase</strong> (satisfying the compiler), where it is cheaper and safer to manage.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="domain-specific-consistency" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="domain-specific-consistency"><span class="header-section-number">4</span> 4. Domain-Specific Consistency</h2>
+<p>To ensure these findings are not artifacts of a single outlier project, we validated the trends across distinct functional domains.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-norm-dist-repo" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-norm-dist-repo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualizations/normalized_category_distribution_by_lib.png" class="img-fluid figure-img" width="500">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-norm-dist-repo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Normalized Category Distribution by Repository. The pattern holds across diverse domains.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="key-findings-3" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="key-findings-3"><span class="header-section-number">4.1</span> Key Findings</h3>
+<ul>
+<li><strong>Universality of the Pattern:</strong> Whether in networking (<code>curl</code> vs.&nbsp;<code>hyper</code>), data storage (<code>sqlite</code> vs.&nbsp;<code>limbo</code>), or parsing (<code>libxml2</code> vs.&nbsp;<code>quick-xml</code>), the structural difference remains consistent: C projects are weighted towards corrective maintenance; Rust projects are weighted towards feature work.</li>
+<li><strong>The XML Extreme:</strong> The contrast is most visible in the XML parsing domain. <code>libxml2</code> (a mature, widely-used C library) shows a maintenance profile dominated by Logic and Memory fixes, while <code>quick-xml</code> acts as a pure “growth” project. This validates that for parsing-heavy workloads—where memory management is most complex—the benefits of Rust are most pronounced.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="summary-of-results" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="summary-of-results"><span class="header-section-number">5</span> 5. Summary of Results</h2>
+<p>Our multi-modal classification pipeline, applied to 180,000 commits, provides strong quantitative evidence for the economic advantages of Rust:</p>
+<ol type="1">
+<li><strong>Reduction of Risk:</strong> Rust reduces the proportion of memory safety maintenance work by approximately <strong>3x</strong>.</li>
+<li><strong>Reallocation of Resources:</strong> There is a near-perfect correlation between the reduction in memory safety maintenance work and the increase in feature development work.</li>
+<li><strong>Efficiency of Complexity:</strong> While Rust commits are marginally more complex, this upfront investment effectively eradicates entire classes of high-risk bugs, resulting in a more efficient long-term maintenance profile.</li>
+</ol>
 
 
 <!-- -->
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -665,7 +815,97 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Results"</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> html</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. What are developers focusing on (Maintenance /Feature)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-language-tax</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Difference in Commit Focus (C vs. Rust). Positive values indicate a higher share of effort in C; negative values indicate a higher share in Rust. All categories in the visualization are Maintenance except 'Feature &amp; Value Add'"</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">"visualizations/diverging_distribution_delta.png"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Findings</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The data demonstrates a clear resource trade-off. In every functional domain analyzed (XML, HTTP, TLS, etc.), C projects show a deficit in **Feature &amp; Value Add** work that corresponds almost directly to their surplus in Maintenance work</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The purple bars (Memory Safety) are consistently positive across all domains. This confirms that memory safety maintenance is a more common occurrence on C projects. In the XML domain (<span class="in">`libxml2`</span> vs. <span class="in">`quick-xml`</span>), this tax accounts for nearly **20%** of the total maintenance differential.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The Rust divident: The green bars (Feature &amp; Value Add) are consistently negative, indicating higher activity in Rust. This suggests that the time saved by *not* fixing memory bugs in Rust is reinvested directly into innovation and feature development.</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Strategic Implication:** C forces a focus fixing the past Memory safety issues and other forms of maintenance whereas Rust enables a focus on growth and adding newer features.</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Quantifying the Memory Safety Gap</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>This section drills down into the specific distribution of maintenance categories to quantify the magnitude of the safety difference.</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-norm-dist-language</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Normalized Category Distribution by Language. Note the disparity in Memory Safety vs. Feature work."</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">"visualizations/normalized_category_distribution_by_langauge.png"</span>)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Findings</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**3x Reduction in Memory Burden:** Our classifier identified that **\~12%** of all commits in the C sample were related to Memory Safety &amp; Robustness, compared to only **\~4%** in the Rust sample. This represents a **3x reduction** in the frequency of memory-related maintenance events.</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Logic &amp; Correctness:** Interestingly, C also shows a higher proportion of general Logic &amp; Correctness fixes. This supports the hypothesis that Rust’s expressive type system (e.g., <span class="in">`Option`</span>, <span class="in">`Result`</span>, pattern matching) prevents a class of logic errors at compile time that typically manifest as runtime bugs in C.</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**The Growth Gap:** Rust projects show a significantly larger proportion of commits dedicated to "Feature &amp; Value Add," corroborating the "Rust Dividend" observed in the previous section.</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Cognitive Load Analysis: The "Shift Left" Effect</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>Having established the *volume* of work, we now analyze the *nature* of the work using our Commit Complexity Score (CCS).</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>*Note: CCS is a composite metric derived from code entropy (the number of files affected , churn (number of lines changed) , and amount of cognitive complexity (understand required to carry out that type of maintenance: used LLM to get the cognitive complexity score)*</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-ccs-scores</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Commit Complexity Scores (CCS) by Language. Rust commits show slightly higher complexity on average, indicating a 'Shift Left' in cognitive load."</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">"visualizations/ccs_by_language.png"</span>)</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Findings</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Higher Average Complexity in Rust:** Rust commits exhibit a slightly higher CCS than their C counterparts. At first glance, this might suggest Rust is "harder" to maintain. However, viewed in context with the Error Profile, a different story emerges.</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Pre-compile shift:** The higher complexity per commit in Rust reflects the language's requirement to handle correctness *at write-time*. Rust forces developers to satisfy the borrow checker and handle errors explicitly before merging.</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Front-Loaded vs. Back-Loaded Cost:**</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>**Rust:** Pays a small "upfront tax" in commit complexity to ensure correctness.</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>**C:** Allows for lower-complexity commits (simpler code) that are often incorrect, resulting in a massive "backend tax" of debugging memory safety issues later.</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Conclusion:** The data suggests Rust does not eliminate complexity; it moves it. It shifts complexity from the **Maintenance Phase** (debugging crashes) to the **Development Phase** (satisfying the compiler), where it is cheaper and safer to manage.</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4. Domain-Specific Consistency</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>To ensure these findings are not artifacts of a single outlier project, we validated the trends across distinct functional domains.</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-norm-dist-repo</span></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Normalized Category Distribution by Repository. The pattern holds across diverse domains."</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">"visualizations/normalized_category_distribution_by_lib.png"</span>)</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Findings</span></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Universality of the Pattern:** Whether in networking (<span class="in">`curl`</span> vs. <span class="in">`hyper`</span>), data storage (<span class="in">`sqlite`</span> vs. <span class="in">`limbo`</span>), or parsing (<span class="in">`libxml2`</span> vs. <span class="in">`quick-xml`</span>), the structural difference remains consistent: C projects are weighted towards corrective maintenance; Rust projects are weighted towards feature work.</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**The XML Extreme:** The contrast is most visible in the XML parsing domain. <span class="in">`libxml2`</span> (a mature, widely-used C library) shows a maintenance profile dominated by Logic and Memory fixes, while <span class="in">`quick-xml`</span> acts as a pure "growth" project. This validates that for parsing-heavy workloads—where memory management is most complex—the benefits of Rust are most pronounced.</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5. Summary of Results</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>Our multi-modal classification pipeline, applied to 180,000 commits, provides strong quantitative evidence for the economic advantages of Rust:</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Reduction of Risk:** Rust reduces the proportion of memory safety maintenance work by approximately **3x**.</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Reallocation of Resources:** There is a near-perfect correlation between the reduction in memory safety maintenance work and the increase in feature development work.</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Efficiency of Complexity:** While Rust commits are marginally more complex, this upfront investment effectively eradicates entire classes of high-risk bugs, resulting in a more efficient long-term maintenance profile.</span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

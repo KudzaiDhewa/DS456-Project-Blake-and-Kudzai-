@@ -4,7 +4,7 @@
     "href": "data.html#library-selection",
     "title": "Data Sources and Preparation",
     "section": "0.1 Library Selection",
-    "text": "0.1 Library Selection\nFor our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.\nBecause C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development lifecycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.\nThe table below shows the libraries we choose."
+    "text": "0.1 Library Selection\nFor our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.\nBecause C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development life cycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.\nThe table below shows the libraries we choose.\n\n\nCode\ncommits &lt;- read.csv(\"Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv\")\nlibrary(dplyr)\n\n\n\n\nCode\nlibrary_summary &lt;- commits %&gt;%\n  filter(!is.na(year)) %&gt;%\n  group_by(language, repo) %&gt;%\n  summarise(\n    total_commits = n(),\n    min_year = min(year),\n    max_year = max(year),\n    year_range = paste0(min_year, \"–\", max_year),\n    avg_commits_per_year = round(\n      total_commits / (max_year - min_year + 1),\n      2\n    ),\n    .groups = \"drop\"\n  ) %&gt;%\n  arrange(desc(total_commits)) %&gt;%\n  slice_head(n = 9) %&gt;%\n  select(language, repo, total_commits, year_range, avg_commits_per_year)\n\nknitr::kable(\n  library_summary,\n  caption = \"Commit Activity by Language and Repository\",\n  col.names = c(\n    \"Language\",\n    \"Repository\",\n    \"Total Commits\",\n    \"Year Range\",\n    \"Avg. Commits / Year\"\n  )\n)\n\n\n\nCommit Activity by Language and Repository\n\n\nLanguage\nRepository\nTotal Commits\nYear Range\nAvg. Commits / Year\n\n\n\n\nc\nopenssl\n38345\n1998–2025\n1369.46\n\n\nc\nlibcurl\n37157\n1999–2025\n1376.19\n\n\nc\nsqlite\n30862\n2000–2025\n1187.00\n\n\nc\ncoreutils\n30825\n1992–2025\n906.62\n\n\nrust\ncoreutils\n17291\n2013–2025\n1330.08\n\n\nrust\nlimbo\n11385\n2023–2025\n3795.00\n\n\nc\nlibxml2\n7684\n1998–2025\n274.43\n\n\nrust\nrustls\n4598\n2016–2025\n459.80\n\n\nrust\nhyper\n2888\n2014–2025\n240.67"
   },
   {
     "objectID": "data.html#data-sources-and-acquisition",
@@ -18,7 +18,7 @@
     "href": "data.html#key-variables",
     "title": "Data Sources and Preparation",
     "section": "0.3 Key Variables",
-    "text": "0.3 Key Variables\nThe table below describes the primary variables extracted from the Github commit data\n\n\n\n\n\n\n\n\nVariable\nDescription\nType\n\n\n\n\ncommit_diff\nTextual summary of code changes associated with a commit, including files changed and lines added or removed\nText (semi-structured)\n\n\ncommit_message\nFree-text message describing the purpose or intent of the commit\nText\n\n\ntimestamp\nDate and time when the commit was authored\nDatetime\n\n\nauthor\nUsername or identifier of the contributor who authored the commit\nCategorical\n\n\nlibrary\nName of the open-source library associated with the commit\nCategorical\n\n\nlanguage\nProgramming language of the library (C or Rust)\nCategorical\n\n\n\nTable to summarise data real quick\nLibrary | Number of commits | Date range | Average commits per year"
+    "text": "0.3 Key Variables\nThe table below describes the primary variables extracted from the Github commit data\n\n\n\n\n\n\n\n\nVariable\nDescription\nType\n\n\n\n\ncommit_diff\nTextual summary of code changes associated with a commit, including files changed and lines added or removed\nText (semi-structured)\n\n\ncommit_message\nFree-text message describing the purpose or intent of the commit\nText\n\n\ntimestamp\nDate and time when the commit was authored\nDatetime\n\n\nauthor\nUsername or identifier of the contributor who authored the commit\nCategorical\n\n\nlibrary\nName of the open-source library associated with the commit\nCategorical\n\n\nlanguage\nProgramming language of the library (C or Rust)\nCategorical\n\n\n\n\n\nCode\ncommits &lt;- read.csv(\"Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv\")"
   },
   {
     "objectID": "data.html#data-cleaning",
@@ -74,7 +74,7 @@
     "href": "index.html#research-questions",
     "title": "Maintenance Burden Estimation: A comparative study between C and Rust Open Source Packages",
     "section": "2 Research Questions",
-    "text": "2 Research Questions\n**RQ1:**\nIs the maintenance burden of open-source systems libraries lower for projects written in Rust compared to those written in C?\n**RQ2:** Explain how this builds on RQ1 or addresses a related gap."
+    "text": "2 Research Questions\nRQ1:\nIs the maintenance burden of open-source libraries lower for projects written in Rust compared to those written in C?\nRQ2:\nWhat maintenance activities are most common in C vs Rust open source libraries?"
   },
   {
     "objectID": "index.html#why-this-matters",
@@ -82,6 +82,48 @@
     "title": "Maintenance Burden Estimation: A comparative study between C and Rust Open Source Packages",
     "section": "3 Why This Matters",
     "text": "3 Why This Matters\nThis matters because it directly influences our expert’s decision of migrating the libxml2 library from C to Rust."
+  },
+  {
+    "objectID": "results.html",
+    "href": "results.html",
+    "title": "Results",
+    "section": "",
+    "text": "Figure 1: Difference in Commit Focus (C vs. Rust). Positive values indicate a higher share of effort in C; negative values indicate a higher share in Rust. All categories in the visualization are Maintenance except ‘Feature & Value Add’\n\n\n\n\n\n\n\n\nThe data demonstrates a clear resource trade-off. In every functional domain analyzed (XML, HTTP, TLS, etc.), C projects show a deficit in Feature & Value Add work that corresponds almost directly to their surplus in Maintenance work\nThe purple bars (Memory Safety) are consistently positive across all domains. This confirms that memory safety maintenance is a more common occurrence on C projects. In the XML domain (libxml2 vs. quick-xml), this tax accounts for nearly 20% of the total maintenance differential.\nThe Rust divident: The green bars (Feature & Value Add) are consistently negative, indicating higher activity in Rust. This suggests that the time saved by not fixing memory bugs in Rust is reinvested directly into innovation and feature development.\n\n\nStrategic Implication: C forces a focus fixing the past Memory safety issues and other forms of maintenance whereas Rust enables a focus on growth and adding newer features."
+  },
+  {
+    "objectID": "results.html#what-are-developers-focusing-on-maintenance-feature",
+    "href": "results.html#what-are-developers-focusing-on-maintenance-feature",
+    "title": "Results",
+    "section": "",
+    "text": "Figure 1: Difference in Commit Focus (C vs. Rust). Positive values indicate a higher share of effort in C; negative values indicate a higher share in Rust. All categories in the visualization are Maintenance except ‘Feature & Value Add’\n\n\n\n\n\n\n\n\nThe data demonstrates a clear resource trade-off. In every functional domain analyzed (XML, HTTP, TLS, etc.), C projects show a deficit in Feature & Value Add work that corresponds almost directly to their surplus in Maintenance work\nThe purple bars (Memory Safety) are consistently positive across all domains. This confirms that memory safety maintenance is a more common occurrence on C projects. In the XML domain (libxml2 vs. quick-xml), this tax accounts for nearly 20% of the total maintenance differential.\nThe Rust divident: The green bars (Feature & Value Add) are consistently negative, indicating higher activity in Rust. This suggests that the time saved by not fixing memory bugs in Rust is reinvested directly into innovation and feature development.\n\n\nStrategic Implication: C forces a focus fixing the past Memory safety issues and other forms of maintenance whereas Rust enables a focus on growth and adding newer features."
+  },
+  {
+    "objectID": "results.html#quantifying-the-memory-safety-gap",
+    "href": "results.html#quantifying-the-memory-safety-gap",
+    "title": "Results",
+    "section": "2 2. Quantifying the Memory Safety Gap",
+    "text": "2 2. Quantifying the Memory Safety Gap\nThis section drills down into the specific distribution of maintenance categories to quantify the magnitude of the safety difference.\n\n\n\n\n\n\n\n\nFigure 2: Normalized Category Distribution by Language. Note the disparity in Memory Safety vs. Feature work.\n\n\n\n\n\n\n2.1 Key Findings\n\n3x Reduction in Memory Burden: Our classifier identified that ~12% of all commits in the C sample were related to Memory Safety & Robustness, compared to only ~4% in the Rust sample. This represents a 3x reduction in the frequency of memory-related maintenance events.\nLogic & Correctness: Interestingly, C also shows a higher proportion of general Logic & Correctness fixes. This supports the hypothesis that Rust’s expressive type system (e.g., Option, Result, pattern matching) prevents a class of logic errors at compile time that typically manifest as runtime bugs in C.\nThe Growth Gap: Rust projects show a significantly larger proportion of commits dedicated to “Feature & Value Add,” corroborating the “Rust Dividend” observed in the previous section."
+  },
+  {
+    "objectID": "results.html#cognitive-load-analysis-the-shift-left-effect",
+    "href": "results.html#cognitive-load-analysis-the-shift-left-effect",
+    "title": "Results",
+    "section": "3 3. Cognitive Load Analysis: The “Shift Left” Effect",
+    "text": "3 3. Cognitive Load Analysis: The “Shift Left” Effect\nHaving established the volume of work, we now analyze the nature of the work using our Commit Complexity Score (CCS).\nNote: CCS is a composite metric derived from code entropy (the number of files affected , churn (number of lines changed) , and amount of cognitive complexity (understand required to carry out that type of maintenance: used LLM to get the cognitive complexity score)\n\n\n\n\n\n\n\n\nFigure 3: Commit Complexity Scores (CCS) by Language. Rust commits show slightly higher complexity on average, indicating a ‘Shift Left’ in cognitive load.\n\n\n\n\n\n\n3.1 Key Findings\n\nHigher Average Complexity in Rust: Rust commits exhibit a slightly higher CCS than their C counterparts. At first glance, this might suggest Rust is “harder” to maintain. However, viewed in context with the Error Profile, a different story emerges.\nPre-compile shift: The higher complexity per commit in Rust reflects the language’s requirement to handle correctness at write-time. Rust forces developers to satisfy the borrow checker and handle errors explicitly before merging.\nFront-Loaded vs. Back-Loaded Cost:\n\nRust: Pays a small “upfront tax” in commit complexity to ensure correctness.\nC: Allows for lower-complexity commits (simpler code) that are often incorrect, resulting in a massive “backend tax” of debugging memory safety issues later.\n\n\n\nConclusion: The data suggests Rust does not eliminate complexity; it moves it. It shifts complexity from the Maintenance Phase (debugging crashes) to the Development Phase (satisfying the compiler), where it is cheaper and safer to manage."
+  },
+  {
+    "objectID": "results.html#domain-specific-consistency",
+    "href": "results.html#domain-specific-consistency",
+    "title": "Results",
+    "section": "4 4. Domain-Specific Consistency",
+    "text": "4 4. Domain-Specific Consistency\nTo ensure these findings are not artifacts of a single outlier project, we validated the trends across distinct functional domains.\n\n\n\n\n\n\n\n\nFigure 4: Normalized Category Distribution by Repository. The pattern holds across diverse domains.\n\n\n\n\n\n\n4.1 Key Findings\n\nUniversality of the Pattern: Whether in networking (curl vs. hyper), data storage (sqlite vs. limbo), or parsing (libxml2 vs. quick-xml), the structural difference remains consistent: C projects are weighted towards corrective maintenance; Rust projects are weighted towards feature work.\nThe XML Extreme: The contrast is most visible in the XML parsing domain. libxml2 (a mature, widely-used C library) shows a maintenance profile dominated by Logic and Memory fixes, while quick-xml acts as a pure “growth” project. This validates that for parsing-heavy workloads—where memory management is most complex—the benefits of Rust are most pronounced."
+  },
+  {
+    "objectID": "results.html#summary-of-results",
+    "href": "results.html#summary-of-results",
+    "title": "Results",
+    "section": "5 5. Summary of Results",
+    "text": "5 5. Summary of Results\nOur multi-modal classification pipeline, applied to 180,000 commits, provides strong quantitative evidence for the economic advantages of Rust:\n\nReduction of Risk: Rust reduces the proportion of memory safety maintenance work by approximately 3x.\nReallocation of Resources: There is a near-perfect correlation between the reduction in memory safety maintenance work and the increase in feature development work.\nEfficiency of Complexity: While Rust commits are marginally more complex, this upfront investment effectively eradicates entire classes of high-risk bugs, resulting in a more efficient long-term maintenance profile."
   },
   {
     "objectID": "about.html",

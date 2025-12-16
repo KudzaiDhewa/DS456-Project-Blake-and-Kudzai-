@@ -3,7 +3,7 @@ project:
   output-dir: _site
 
 website:
-  title: "Project Title Here"
+  title: "C vs Rust"
   navbar:
     left:
       - text: "Home"

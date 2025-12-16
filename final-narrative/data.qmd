@@ -1,57 +1,14 @@
 ---
 title: "Data Sources and Preparation"
+format: html
+editor: visual
 ---
 
-### image of the data pipeline and methodology
 ## Library Selection
 
 For our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.
 
-<<<<<<< HEAD
-Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development life cycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.
-
-The table below shows the libraries we choose.
-
-```{r, warning = FALSE, message = FALSE}
-
-commits <- read.csv("Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv")
-library(dplyr)
-```
-
-```{r, warning = FALSE, message = FALSE}
-library_summary <- commits %>%
-  filter(!is.na(year)) %>%
-  group_by(language, repo) %>%
-  summarise(
-    total_commits = n(),
-    min_year = min(year),
-    max_year = max(year),
-    year_range = paste0(min_year, "–", max_year),
-    avg_commits_per_year = round(
-      total_commits / (max_year - min_year + 1),
-      2
-    ),
-    .groups = "drop"
-  ) %>%
-  arrange(desc(total_commits)) %>%
-  slice_head(n = 9) %>%
-  select(language, repo, total_commits, year_range, avg_commits_per_year)
-
-knitr::kable(
-  library_summary,
-  caption = "Commit Activity by Language and Repository",
-  col.names = c(
-    "Language",
-    "Repository",
-    "Total Commits",
-    "Year Range",
-    "Avg. Commits / Year"
-  )
-)
-```
-=======
 Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development lifecycle stage, we prioritized libraries that are foundational to their respective ecosystems. While the C libraries naturally have longer histories, the selected Rust libraries represent the standard, production-ready alternatives currently in wide usage.
->>>>>>> 55e45d811a0a6aa1e4dca15ed3e342057897a42c
 
 | Domain | C Repository | Rust Repository |
 |:---|:---|:---|
@@ -65,33 +22,11 @@ Because C is several decades older than Rust, the C libraries in our sample are 
 
 For each library in our sample, we retrieved the complete commit history from its official GitHub repository. Rather than relying on the standard GitHub REST API, which can obscure low-level details, we utilized the `GitPython` library to interface directly with the underlying `.git` object database. This allowed for the extraction of metadata and raw diffs essential for deep analysis.
 
-To ensure accurate interpretation of this raw data—specifically regarding the subtleties of memory management and concurrency in systems languages—we employed a "Pre-Validation" strategy. This involved a targeted "Crash Course" methodology where we cataloged language-specific failure modes (e.g., "double-free" errors in C vs. "borrow checker violations" in Rust). This domain knowledge was applied to a subset of commits to validate our labeling schema, ensuring that our downstream classifications reflected true engineering intent rather than superficial keywords.
+To ensure accurate interpretation of this raw data—specifically regarding the subtleties of memory management and concurrency in systems languages—we employed a "Pre-Validation" strategy. This involved a targeted "Crash Course" methodology where we cataloged language-specific failure modes (e.g., "double-free" errors in C vs. "borrow checker violations" in Rust). This domain knowledge was applied to a subset of commits to validate our labeling schema, ensuring that our downstream classifications reflected true engineering intent rather than keywords.
 
 ## Key Variables
 
-<<<<<<< HEAD
-The table below describes the primary variables extracted from the Github commit data
-
-| Variable          | Description                                                                 | Type                  |
-|-------------------|-----------------------------------------------------------------------------|-----------------------|
-| `commit_diff`     | Textual summary of code changes associated with a commit, including files changed and lines added or removed | Text (semi-structured) |
-| `commit_message`  | Free-text message describing the purpose or intent of the commit            | Text                  |
-| `timestamp`       | Date and time when the commit was authored                                  | Datetime              |
-| `author`          | Username or identifier of the contributor who authored the commit           | Categorical           |
-| `library`         | Name of the open-source library associated with the commit                  | Categorical           |
-| `language`        | Programming language of the library (C or Rust)                             | Categorical           |
-
-
-
-```{r}
-#| code-fold: true
-
-commits <- read.csv("Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv")
-```
-
-=======
 The table below describes the primary variables extracted and engineered for our final dataset.
->>>>>>> 55e45d811a0a6aa1e4dca15ed3e342057897a42c
 
 | Variable | Description | Type |
 |:---|:---|:---|
@@ -115,24 +50,31 @@ Raw git data is inherently noisy. We implemented a custom **Extract-Transform-Lo
 Legacy C repositories (specifically `libxml2`) contain historical commits with non-UTF-8 encodings (e.g., Latin-1). We implemented a sanitization layer using Python’s `surrogateescape` error handler to ensure all textual data was valid UTF-8 before processing.
 
 **2. Smart Diff Truncation ("The Accordion")**
-A major challenge in code analysis is the context window limit of LLMs. A raw diff can span thousands of lines (e.g., auto-generated documentation or build artifacts). To address this, we developed a "Smart Truncation" algorithm using the `unidiff` library:
+A major challenge in code analysis is the context window limit of LLMs. A raw diff can span thousands of lines (e.g., auto-generated documentation or build artifacts). To address this, we developed a "Smart Truncation" algorithm using the `unidiff` library.
 *   **Noise Filtering:** Files related to documentation (`.html`), assets, and lockfiles were stripped of content, preserving only the filename.
-*   **Accordion Logic:** For large code files, the algorithm preserves the "Head" (first 5 lines) and "Tail" (last 5 lines) of a change hunk while truncating the repetitive middle. This reduced token usage by over 60% while maintaining semantic context.
+*   **Accordion Logic:** For large code files, the algorithm preserves the "Head" (first 5 lines) and "Tail" (last 5 lines) of a change hunk while truncating the repetitive middle. 
+*   **Impact:** By reducing massive functional blocks (often 100+ lines) to 10-line context summaries and eliminating non-semantic build artifacts, we achieved an estimated **token reduction of >60%** compared to raw full-text diffs, allowing for efficient batch processing without losing semantic context.
 
 # Data Processing
 
 ## Commit Classification Using Large Language Models
 
-To distinguish between different types of development activity, we classified each commit into one of five mutually exclusive categories: **Memory Safety & Robustness**, **Concurrency & Thread Safety**, **Logic & Correctness**, **Build/Refactor**, and **Feature & Value Add**.
+To distinguish between different types of development activity, we classified each commit into one of five mutually exclusive categories 
 
-This classification was performed using a large language model (LLM), which was prompted with the commit message and the summarized diff. In addition to categorical classification, the LLM assigned a relative **complexity score (1-5)** reflecting the cognitive effort required for the task.
+### Classification Schema 
+1.  **Memory Safety & Robustness:** Fixes for leaks, segfaults, bounds checks, unsafe blocks, and panics.
+2.  **Concurrency & Thread Safety:** Fixes for race conditions, deadlocks, atomicity violations, and Send/Sync trait issues.
+3.  **Logic & Correctness:** Fixes for functional bugs, state machine errors, and specification compliance.
+4.  **Build, Refactor & Internal:** Non-functional changes, CI/CD, testing, style changes, and dependency management.
+5.  **Feature & Value Add:** Implementation of new capabilities, APIs, or performance optimizations.
 
-## LLM Configuration
+This classification was performed using a large language model (LLM), which was prompted with the commit message and the summarized diff. In addition to categorical classification, the LLM assigned a relative **complexity score (1-5)** reflecting the conceptual knowledge required for the task.
 
-*   **Model Used:** Google Gemini 2.0 Flash Lie (Supervised-Fine-Tuning).
+## LLM Configuration and Training
+
+*   **Model Used:** Google Gemini 2.0 Flash (Fine-Tuned).
 *   **Infrastructure:** Google Cloud Platform (Vertex AI).
-*   **Training Strategy:** We fine-tuned the model on a "Gold Standard" dataset of ~240 manually labeled commits from `libxml2` and `quick-xml`.
-*   **Synthetic Augmentation:** To address class imbalance (where "Concurrency" bugs are rare), we augmented the training set with high-quality synthetic examples of C and Rust concurrency bugs. This ensured the model could recognize these critical but infrequent patterns.
+*   **Synthetic Augmentation:** To address class imbalances, we augmented the training set with high-quality synthetic examples of C and Rust concurrency bugs. This ensured the model could recognize these critical but infrequent patterns.
 *   **Inference:** The full dataset was processed using Vertex AI Batch Prediction, classifying all **182,746 commits**.
 *   **Prompt Structure**: For the prompt structure the system instructions we used was 
 "Role: Expert C/Rust Reviewer. Task: Classify commit. Return ONLY valid JSON.\n"
@@ -152,9 +94,15 @@ This classification was performed using a large language model (LLM), which was 
 )
 and each user field was f"Lang: {language} Msg: {commit_message}\nDiff:\n{cleaned_diff}".
 
+### Gold Standard Labeling Methodology (HITL)
+To create the training dataset, we employed a **Human-in-the-Loop (HITL)** workflow assisted by a "Mini-Lesson" prompt structure. 
+1.  **Mini-Lesson Generation:** For every unlabeled commit, an LLM generated the standard classification JSON *plus* an extended "Mini-Lesson." This lesson explained the key syntax involved, the underlying concept, and the reasoning for the specific category value.
+2.  **Human Verification:** The human labeler reviewed the commit superficially alongside the Mini-Lesson. The label was confirmed only if the Diff, the Category, and the Lesson explanation aligned perfectly.
+3.  **Ensemble Voting:** In cases of discrepancy or ambiguity, a secondary, independent LLM was queried on the same case. The final label was determined via a voting system (Human + Initial LLM + Secondary LLM) to ensure consensus.
+
 ## Validation
 
-To assess classification reliability, the model's outputs were validated against a held-out test set. We utilized a **Human-in-the-Loop (HITL)** approach during the creation of the training data, where an expert reviewer (aided by ensemble LLM consensus) verified the labels.
+Validation of the model's performance was conducted via Google Cloud Platform's internal evaluation framework. During the fine-tuning process, Vertex AI automatically reserved a random **80/20 split** (80% training, 20% validation). The model's loss metrics on this holdout validation set were monitored to ensure generalization and prevent overfitting to the labeled examples.
 
 ## The Commit Complexity Score (CCS)
 

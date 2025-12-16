@@ -2,9 +2,7 @@
 title: "Data Sources and Preparation"
 ---
 
-
 ### image of the data pipeline and methodology
-
 ## Library Selection
 
 For our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.
@@ -51,7 +49,6 @@ knitr::kable(
   )
 )
 ```
-
 =======
 Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development lifecycle stage, we prioritized libraries that are foundational to their respective ecosystems. While the C libraries naturally have longer histories, the selected Rust libraries represent the standard, production-ready alternatives currently in wide usage.
 >>>>>>> 55e45d811a0a6aa1e4dca15ed3e342057897a42c
@@ -66,22 +63,8 @@ Because C is several decades older than Rust, the C libraries in our sample are 
 
 ## Data Sources and Acquisition
 
-For each library in our sample, we retrieved the complete commit history from its official GitHub repository using the GitHub REST API. GitHub was chosen as the data source because it provides standardized, time-stamped records of development activity across projects and is the primary collaboration platform for all libraries in our sample.
-
-Each commit record includes:
-
-  - A unique commit identifier
-
-  - A textual commit message describing the change
-
-  - A commit diff summarizing code changes
-
-  - The author of the commit
-
-  - A timestamp indicating when the commit was authored
 For each library in our sample, we retrieved the complete commit history from its official GitHub repository. Rather than relying on the standard GitHub REST API, which can obscure low-level details, we utilized the `GitPython` library to interface directly with the underlying `.git` object database. This allowed for the extraction of metadata and raw diffs essential for deep analysis.
 
-These commit-level records form the core dataset used in our analysis. An individual row in the dataset corresponds to a single commit made to a given library.
 To ensure accurate interpretation of this raw data—specifically regarding the subtleties of memory management and concurrency in systems languages—we employed a "Pre-Validation" strategy. This involved a targeted "Crash Course" methodology where we cataloged language-specific failure modes (e.g., "double-free" errors in C vs. "borrow checker violations" in Rust). This domain knowledge was applied to a subset of commits to validate our labeling schema, ensuring that our downstream classifications reflected true engineering intent rather than superficial keywords.
 
 ## Key Variables
@@ -173,12 +156,10 @@ and each user field was f"Lang: {language} Msg: {commit_message}\nDiff:\n{cleane
 
 To assess classification reliability, the model's outputs were validated against a held-out test set. We utilized a **Human-in-the-Loop (HITL)** approach during the creation of the training data, where an expert reviewer (aided by ensemble LLM consensus) verified the labels.
 
-## Validation
 ## The Commit Complexity Score (CCS)
 
 Finally, we calculated a derived metric to quantify the total load of a change. The **Commit Complexity Score (CCS)** combines the qualitative assessment of the LLM with quantitative metrics from Git:
 
-To assess classification reliability, a subset of commits was manually reviewed and compared against the LLM’s outputs. Disagreements were examined qualitatively to identify systematic errors or ambiguities. While LLM-based classification introduces some subjectivity, it enables consistent interpretation of free-text commit messages at scale and provides a practical approach for large-scale maintenance analysis.
 $$ CCS = (w_1 \cdot C_{cog}) + (w_2 \cdot \log_{10}(Entropy + 1)) + (w_3 \cdot \log_{10}(Churn + 1)) $$
 
 Where $C_{cog}$ is the LLM-assessed complexity, and $Entropy$ and $Churn$ are logarithmic scalings of files touched and lines changed, respectively.

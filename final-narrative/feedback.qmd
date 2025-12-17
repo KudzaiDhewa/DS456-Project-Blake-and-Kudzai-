@@ -7,16 +7,16 @@ Feedback from Josh (Second Consultation) and How We Implemented It
 
 In our second consultation with Josh, he provided several key pieces of feedback that we subsequently incorporated throughout the project:
 
-- Rather than categorizing commits into many fine-grained commit types, we simplified the task by asking an LLM to classify each commit as either feature or maintenance.
+-   Rather than categorizing commits into many fine-grained commit types, we simplified the task by asking an LLM to classify each commit as either feature or maintenance.
 
-- Josh noted that an LLM is likely to perform this classification more accurately, given access to both the commit diff and the commit message.
+-   Josh noted that an LLM is likely to perform this classification more accurately, given access to both the commit diff and the commit message.
 
-- He also suggested that maintenance commits related specifically to security would be particularly informative. As a result, we had the LLM additionally indicate whether a maintenance commit was security-related.
+-   He also suggested that maintenance commits related specifically to security would be particularly informative. As a result, we had the LLM additionally indicate whether a maintenance commit was security-related.
 
-- Instead of focusing solely on the count of security or maintenance commits per library, Josh recommended incorporating a complexity score that reflects the estimated effort required to complete the coding task associated with each commit.
+-   Instead of focusing solely on the count of security or maintenance commits per library, Josh recommended incorporating a complexity score that reflects the estimated effort required to complete the coding task associated with each commit.
 
-- In addition to manually validating the classifications made by the LLM he also encouraged us to think carefully about the prompts we use for the LLM.
+-   In addition to manually validating the classifications made by the LLM he also encouraged us to think carefully about the prompts we use for the LLM.
 
-- Using this approach, we estimate maintenance burden by weighting maintenance commits by their complexity scores, rather than treating all commits as equally costly.
+-   Using this approach, we estimate maintenance burden by weighting maintenance commits by their complexity scores, rather than treating all commits as equally costly.
 
-- Finally, Josh emphasized the importance of carefully selecting pairs of libraries with comparable levels of maturity. While this is challenging given Rust’s relative youth compared to C, this feedback informed our final selection of libraries that are largely past active feature development and primarily in a long-term maintenance phase.
+-   Finally, Josh emphasized the importance of carefully selecting pairs of libraries with comparable levels of maturity. While this is challenging given Rust’s relative youth compared to C, this feedback informed our final selection of libraries that are largely past active feature development and primarily in a long-term maintenance phase.

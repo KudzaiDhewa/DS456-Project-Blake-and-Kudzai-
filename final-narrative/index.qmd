@@ -6,8 +6,7 @@ date: last-modified
 
 ## Overview
 
-Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C. 
----
+## Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C.
 
 ![](images/news_article.jpeg)\
 

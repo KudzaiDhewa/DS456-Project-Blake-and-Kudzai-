@@ -1,13 +1,19 @@
 ---
 title: "Data Sources and Preparation"
+format: html
+editor: visual
 ---
 
+<<<<<<< HEAD
 ### image of the data pipeline and methodology
 
+=======
+>>>>>>> c6473bff281317b1fff54d806d76a9493cd3309a
 ## Library Selection
 
 For our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.
 
+<<<<<<< HEAD
 Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development life cycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.
 
 The table below shows the libraries we choose.
@@ -50,11 +56,23 @@ knitr::kable(
   )
 )
 ```
+=======
+Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development lifecycle stage, we prioritized libraries that are foundational to their respective ecosystems. While the C libraries naturally have longer histories, the selected Rust libraries represent the standard, production-ready alternatives currently in wide usage.
+
+| Domain | C Repository | Rust Repository |
+|:---|:---|:---|
+| **XML Parsing** | `libxml2` | `quick-xml` |
+| **HTTP/Networking** | `libcurl` | `hyper` |
+| **Cryptography/TLS** | `openssl` | `rustls` |
+| **Database** | `sqlite` | `limbo` |
+| **System Utilities** | `coreutils` (GNU) | `coreutils` (uutils) |
+>>>>>>> c6473bff281317b1fff54d806d76a9493cd3309a
 
 ## Data Sources and Acquisition
 
 For each library in our sample, we retrieved the complete commit history from its official GitHub repository using the GitHub REST API. GitHub was chosen as the data source because it provides standardized, time-stamped records of development activity across projects and is the primary collaboration platform for all libraries in our sample.
 
+<<<<<<< HEAD
 Each commit record includes:
 
 -   A unique commit identifier
@@ -91,23 +109,114 @@ commits <- read.csv("Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv")
 ```{r}
 # Example: show one clean pipeline, folded by default
 ```
+=======
+To ensure accurate interpretation of this raw data—specifically regarding the subtleties of memory management and concurrency in systems languages—we employed a "Pre-Validation" strategy. This involved a targeted "Crash Course" methodology where we cataloged language-specific failure modes (e.g., "double-free" errors in C vs. "borrow checker violations" in Rust). This domain knowledge was applied to a subset of commits to validate our labeling schema, ensuring that our downstream classifications reflected true engineering intent rather than keywords.
+
+## Key Variables
+
+The table below describes the primary variables extracted and engineered for our final dataset.
+
+| Variable | Description | Type |
+|:---|:---|:---|
+| `commit_id` | Unique SHA-1 identifier for the commit. | String |
+| `commit_diff` | Smartly truncated textual summary of code changes. | Text |
+| `commit_message` | Free-text message describing the intent of the commit. | Text |
+| `language` | Programming language of the library (C or Rust). | Categorical |
+| `repo` | Name of the open-source library. | Categorical |
+| `category` | The inferred intent (e.g., "Memory Safety", "Feature"). | Categorical |
+| `complexity` | LLM-assessed cognitive load (1-5). | Integer |
+| `entropy` | Number of files modified in the commit. | Integer |
+| `churn` | Total lines added and removed. | Integer |
+| `ccs_score` | Calculated Commit Complexity Score (derived metric). | Float |
+| `year` | Year the commit was authored. | Integer |
+
+## Data Cleaning
+
+Raw git data is inherently noisy. We implemented a custom **Extract-Transform-Load (ETL) pipeline** to prepare the data for analysis.
+
+**1. Unicode Sanitization**
+Legacy C repositories (specifically `libxml2`) contain historical commits with non-UTF-8 encodings (e.g., Latin-1). We implemented a sanitization layer using Python’s `surrogateescape` error handler to ensure all textual data was valid UTF-8 before processing.
+
+**2. Smart Diff Truncation ("The Accordion")**
+A major challenge in code analysis is the context window limit of LLMs. A raw diff can span thousands of lines (e.g., auto-generated documentation or build artifacts). To address this, we developed a "Smart Truncation" algorithm using the `unidiff` library.
+*   **Noise Filtering:** Files related to documentation (`.html`), assets, and lockfiles were stripped of content, preserving only the filename.
+*   **Accordion Logic:** For large code files, the algorithm preserves the "Head" (first 5 lines) and "Tail" (last 5 lines) of a change hunk while truncating the repetitive middle. 
+*   **Impact:** By reducing massive functional blocks (often 100+ lines) to 10-line context summaries and eliminating non-semantic build artifacts, we achieved an estimated **token reduction of >60%** compared to raw full-text diffs, allowing for efficient batch processing without losing semantic context.
+>>>>>>> c6473bff281317b1fff54d806d76a9493cd3309a
 
 # Data Processing
 
 ## Commit Classification Using Large Language Models
 
+<<<<<<< HEAD
 To distinguish between different types of development activity, we classified each commit as either maintenance-oriented or feature-oriented based on its commit message and diff. Maintenance commits include bug fixes, refactoring, performance improvements, and dependency updates, while feature commits introduce new functionality or expand existing capabilities.
 
 This classification was performed using a large language model (LLM), which was prompted with the commit message and a summarized diff. In addition to categorical classification, the LLM was asked to assign a relative complexity score reflecting the estimated effort required to complete the task represented by the commit.
+=======
+To distinguish between different types of development activity, we classified each commit into one of five mutually exclusive categories 
+
+### Classification Schema 
+1.  **Memory Safety & Robustness:** Fixes for leaks, segfaults, bounds checks, unsafe blocks, and panics.
+2.  **Concurrency & Thread Safety:** Fixes for race conditions, deadlocks, atomicity violations, and Send/Sync trait issues.
+3.  **Logic & Correctness:** Fixes for functional bugs, state machine errors, and specification compliance.
+4.  **Build, Refactor & Internal:** Non-functional changes, CI/CD, testing, style changes, and dependency management.
+5.  **Feature & Value Add:** Implementation of new capabilities, APIs, or performance optimizations.
+>>>>>>> c6473bff281317b1fff54d806d76a9493cd3309a
 
 ## LLM Configuration
+This classification was performed using a large language model (LLM), which was prompted with the commit message and the summarized diff. In addition to categorical classification, the LLM assigned a relative **complexity score (1-5)** reflecting the conceptual knowledge required for the task.
 
+<<<<<<< HEAD
 Model used: \[Specify model\]
 
 Prompt structure: \[Brief description or example\]
 
 Output: Commit type (maintenance vs. feature) and complexity score
+=======
+## LLM Configuration and Training
+
+*   **Model Used:** Google Gemini 2.0 Flash (Fine-Tuned).
+*   **Infrastructure:** Google Cloud Platform (Vertex AI).
+*   **Synthetic Augmentation:** To address class imbalances, we augmented the training set with high-quality synthetic examples of C and Rust concurrency bugs. This ensured the model could recognize these critical but infrequent patterns.
+*   **Inference:** The full dataset was processed using Vertex AI Batch Prediction, classifying all **182,746 commits**.
+*   **Prompt Structure**: For the prompt structure the system instructions we used was 
+"Role: Expert C/Rust Reviewer. Task: Classify commit. Return ONLY valid JSON.\n"
+    "Categories (Choose one strictly):\n"
+    "- 'Memory Safety & Robustness' (Bounds, pointers, leaks, unsafe blocks, panics)\n"
+    "- 'Concurrency & Thread Safety' (Atomics, locks, races, Send/Sync)\n"
+    "- 'Logic & Correctness' (Math, state, functional bugs)\n"
+    "- 'Build, Refactor & Internal' (CI, tests, style, deps, cleanup)\n"
+    "- 'Feature & Value Add' (New capabilities, perf)\n\n"
+    "Metrics:\n"
+    "- feat: Boolean (True if Category is Feature)\n"
+    "- sec: Boolean (True if fixing crash/vuln)\n"
+    "- comp: Integer 1 (Trivial) to 5 (Complex)\n"
+    "- reas: String (Max 15 words)\n\n"
+    "JSON Schema:\n"
+    "{\"cat\": \"Category Name\", \"feat\": bool, \"sec\": bool, \"comp\": int, \"reas\": \"str\"}"
+)
+and each user field was f"Lang: {language} Msg: {commit_message}\nDiff:\n{cleaned_diff}".
+>>>>>>> c6473bff281317b1fff54d806d76a9493cd3309a
+
+### Gold Standard Labeling Methodology (HITL)
+To create the training dataset, we employed a **Human-in-the-Loop (HITL)** workflow assisted by a "Mini-Lesson" prompt structure. 
+1.  **Mini-Lesson Generation:** For every unlabeled commit, an LLM generated the standard classification JSON *plus* an extended "Mini-Lesson." This lesson explained the key syntax involved, the underlying concept, and the reasoning for the specific category value.
+2.  **Human Verification:** The human labeler reviewed the commit superficially alongside the Mini-Lesson. The label was confirmed only if the Diff, the Category, and the Lesson explanation aligned perfectly.
+3.  **Ensemble Voting:** In cases of discrepancy or ambiguity, a secondary, independent LLM was queried on the same case. The final label was determined via a voting system (Human + Initial LLM + Secondary LLM) to ensure consensus.
 
 ## Validation
 
+<<<<<<< HEAD
 To assess classification reliability, a subset of commits was manually reviewed and compared against the LLM’s outputs. Disagreements were examined qualitatively to identify systematic errors or ambiguities. While LLM-based classification introduces some subjectivity, it enables consistent interpretation of free-text commit messages at scale and provides a practical approach for large-scale maintenance analysis.
+=======
+Validation of the model's performance was conducted via Google Cloud Platform's internal evaluation framework. During the fine-tuning process, Vertex AI automatically reserved a random **80/20 split** (80% training, 20% validation). The model's loss metrics on this holdout validation set were monitored to ensure generalization and prevent overfitting to the labeled examples.
+
+## The Commit Complexity Score (CCS)
+
+Finally, we calculated a derived metric to quantify the total load of a change. The **Commit Complexity Score (CCS)** combines the qualitative assessment of the LLM with quantitative metrics from Git:
+
+$$ CCS = (w_1 \cdot C_{cog}) + (w_2 \cdot \log_{10}(Entropy + 1)) + (w_3 \cdot \log_{10}(Churn + 1)) $$
+
+Where $C_{cog}$ is the LLM-assessed complexity, and $Entropy$ and $Churn$ are logarithmic scalings of files touched and lines changed, respectively.
+```
+>>>>>>> c6473bff281317b1fff54d806d76a9493cd3309a

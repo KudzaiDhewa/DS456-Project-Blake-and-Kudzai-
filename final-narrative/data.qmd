@@ -163,7 +163,6 @@ To distinguish between different types of development activity, we classified ea
 5.  **Feature & Value Add:** Implementation of new capabilities, APIs, or performance optimizations.
 >>>>>>> c6473bff281317b1fff54d806d76a9493cd3309a
 
-## LLM Configuration
 This classification was performed using a large language model (LLM), which was prompted with the commit message and the summarized diff. In addition to categorical classification, the LLM assigned a relative **complexity score (1-5)** reflecting the conceptual knowledge required for the task.
 
 <<<<<<< HEAD

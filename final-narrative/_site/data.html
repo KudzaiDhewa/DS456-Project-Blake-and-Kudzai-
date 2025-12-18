@@ -103,6 +103,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -140,16 +169,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Limitations</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./contributions.html"> 
-<span class="menu-text">Contributions</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="./feedback.html"> 
 <span class="menu-text">Expert Feedback</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./appendix.html"> 
-<span class="menu-text">Appendix</span></a>
+<span class="menu-text">Appendix &amp; References</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -167,15 +192,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#image-of-the-data-pipeline-and-methodology" id="toc-image-of-the-data-pipeline-and-methodology" class="nav-link active" data-scroll-target="#image-of-the-data-pipeline-and-methodology"><span class="header-section-number">0.0.1</span> image of the data pipeline and methodology</a></li>
-  <li><a href="#library-selection" id="toc-library-selection" class="nav-link" data-scroll-target="#library-selection"><span class="header-section-number">0.1</span> Library Selection</a></li>
+  <li><a href="#library-selection" id="toc-library-selection" class="nav-link active" data-scroll-target="#library-selection"><span class="header-section-number">0.1</span> Library Selection</a></li>
   <li><a href="#data-sources-and-acquisition" id="toc-data-sources-and-acquisition" class="nav-link" data-scroll-target="#data-sources-and-acquisition"><span class="header-section-number">0.2</span> Data Sources and Acquisition</a></li>
   <li><a href="#key-variables" id="toc-key-variables" class="nav-link" data-scroll-target="#key-variables"><span class="header-section-number">0.3</span> Key Variables</a></li>
+  <li><a href="#variables-after-llm-classification" id="toc-variables-after-llm-classification" class="nav-link" data-scroll-target="#variables-after-llm-classification"><span class="header-section-number">0.4</span> Variables after LLM classification</a></li>
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning"><span class="header-section-number">0.5</span> Data Cleaning</a></li>
   <li><a href="#data-processing" id="toc-data-processing" class="nav-link" data-scroll-target="#data-processing"><span class="header-section-number">1</span> Data Processing</a>
   <ul class="collapse">
-  <li><a href="#commit-classification-using-large-language-models" id="toc-commit-classification-using-large-language-models" class="nav-link" data-scroll-target="#commit-classification-using-large-language-models"><span class="header-section-number">1.1</span> Commit Classification Using Large Language Models</a></li>
-  <li><a href="#llm-configuration" id="toc-llm-configuration" class="nav-link" data-scroll-target="#llm-configuration"><span class="header-section-number">1.2</span> LLM Configuration</a></li>
+  <li><a href="#commit-classification-using-large-language-models" id="toc-commit-classification-using-large-language-models" class="nav-link" data-scroll-target="#commit-classification-using-large-language-models"><span class="header-section-number">1.1</span> Commit Classification Using Large Language Models</a>
+  <ul class="collapse">
+  <li><a href="#classification-schema" id="toc-classification-schema" class="nav-link" data-scroll-target="#classification-schema"><span class="header-section-number">1.1.1</span> Classification Schema</a></li>
+  </ul></li>
+  <li><a href="#llm-configuration-and-training" id="toc-llm-configuration-and-training" class="nav-link" data-scroll-target="#llm-configuration-and-training"><span class="header-section-number">1.2</span> LLM Configuration and Training</a>
+  <ul class="collapse">
+  <li><a href="#gold-standard-labeling-methodology-hitl" id="toc-gold-standard-labeling-methodology-hitl" class="nav-link" data-scroll-target="#gold-standard-labeling-methodology-hitl"><span class="header-section-number">1.2.1</span> Gold Standard Labeling Methodology (HITL)</a></li>
+  </ul></li>
   <li><a href="#validation" id="toc-validation" class="nav-link" data-scroll-target="#validation"><span class="header-section-number">1.3</span> Validation</a></li>
+  <li><a href="#the-commit-complexity-score-ccs" id="toc-the-commit-complexity-score-ccs" class="nav-link" data-scroll-target="#the-commit-complexity-score-ccs"><span class="header-section-number">1.4</span> The Commit Complexity Score (CCS)</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -202,9 +235,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="image-of-the-data-pipeline-and-methodology" class="level3" data-number="0.0.1">
-<h3 data-number="0.0.1" class="anchored" data-anchor-id="image-of-the-data-pipeline-and-methodology"><span class="header-section-number">0.0.1</span> image of the data pipeline and methodology</h3>
-</section>
 <section id="library-selection" class="level2" data-number="0.1">
 <h2 data-number="0.1" class="anchored" data-anchor-id="library-selection"><span class="header-section-number">0.1</span> Library Selection</h2>
 <p>For our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.</p>
@@ -338,6 +368,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Domain</th>
+<th style="text-align: left;">C Repository</th>
+<th style="text-align: left;">Rust Repository</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>XML Parsing</strong></td>
+<td style="text-align: left;"><code>libxml2</code></td>
+<td style="text-align: left;"><code>quick-xml</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>HTTP/Networking</strong></td>
+<td style="text-align: left;"><code>libcurl</code></td>
+<td style="text-align: left;"><code>hyper</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Cryptography/TLS</strong></td>
+<td style="text-align: left;"><code>openssl</code></td>
+<td style="text-align: left;"><code>rustls</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Database</strong></td>
+<td style="text-align: left;"><code>sqlite</code></td>
+<td style="text-align: left;"><code>limbo</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>System Utilities</strong></td>
+<td style="text-align: left;"><code>coreutils</code> (GNU)</td>
+<td style="text-align: left;"><code>coreutils</code> (uutils)</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="data-sources-and-acquisition" class="level2" data-number="0.2">
 <h2 data-number="0.2" class="anchored" data-anchor-id="data-sources-and-acquisition"><span class="header-section-number">0.2</span> Data Sources and Acquisition</h2>
@@ -407,12 +473,88 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>commits <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: show one clean pipeline, folded by default</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
+<p>To ensure accurate interpretation of this raw data—specifically regarding the subtleties of memory management and concurrency in systems languages—we employed a “Pre-Validation” strategy. This involved a targeted “Crash Course” methodology where we cataloged language-specific failure modes (e.g., “double-free” errors in C vs.&nbsp;“borrow checker violations” in Rust). This domain knowledge was applied to a subset of commits to validate our labeling schema, ensuring that our downstream classifications reflected true engineering intent rather than keywords.</p>
+</section>
+<section id="variables-after-llm-classification" class="level2" data-number="0.4">
+<h2 data-number="0.4" class="anchored" data-anchor-id="variables-after-llm-classification"><span class="header-section-number">0.4</span> Variables after LLM classification</h2>
+<p>The table below describes the primary variables extracted and engineered for our final dataset.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>commit_id</code></td>
+<td style="text-align: left;">Unique SHA-1 identifier for the commit.</td>
+<td style="text-align: left;">String</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>commit_diff</code></td>
+<td style="text-align: left;">Smartly truncated textual summary of code changes.</td>
+<td style="text-align: left;">Text</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>commit_message</code></td>
+<td style="text-align: left;">Free-text message describing the intent of the commit.</td>
+<td style="text-align: left;">Text</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>language</code></td>
+<td style="text-align: left;">Programming language of the library (C or Rust).</td>
+<td style="text-align: left;">Categorical</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>repo</code></td>
+<td style="text-align: left;">Name of the open-source library.</td>
+<td style="text-align: left;">Categorical</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>category</code></td>
+<td style="text-align: left;">The inferred intent (e.g., “Memory Safety”, “Feature”).</td>
+<td style="text-align: left;">Categorical</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>complexity</code></td>
+<td style="text-align: left;">LLM-assessed cognitive load (1-5).</td>
+<td style="text-align: left;">Integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>entropy</code></td>
+<td style="text-align: left;">Number of files modified in the commit.</td>
+<td style="text-align: left;">Integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>churn</code></td>
+<td style="text-align: left;">Total lines added and removed.</td>
+<td style="text-align: left;">Integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>ccs_score</code></td>
+<td style="text-align: left;">Calculated Commit Complexity Score (derived metric).</td>
+<td style="text-align: left;">Float</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>year</code></td>
+<td style="text-align: left;">Year the commit was authored.</td>
+<td style="text-align: left;">Integer</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data-cleaning" class="level2" data-number="0.5">
+<h2 data-number="0.5" class="anchored" data-anchor-id="data-cleaning"><span class="header-section-number">0.5</span> Data Cleaning</h2>
+<p>Raw git data is inherently noisy. We implemented a custom <strong>Extract-Transform-Load (ETL) pipeline</strong> to prepare the data for analysis.</p>
+<p><strong>1. Unicode Sanitization</strong> Legacy C repositories (specifically <code>libxml2</code>) contain historical commits with non-UTF-8 encodings (e.g., Latin-1). We implemented a sanitization layer using Python’s <code>surrogateescape</code> error handler to ensure all textual data was valid UTF-8 before processing.</p>
+<p><strong>2. Smart Diff Truncation (“The Accordion”)</strong> A major challenge in code analysis is the context window limit of LLMs. A raw diff can span thousands of lines (e.g., auto-generated documentation or build artifacts). To address this, we developed a “Smart Truncation” algorithm using the <code>unidiff</code> library. * <strong>Noise Filtering:</strong> Files related to documentation (<code>.html</code>), assets, and lockfiles were stripped of content, preserving only the filename. * <strong>Accordion Logic:</strong> For large code files, the algorithm preserves the “Head” (first 5 lines) and “Tail” (last 5 lines) of a change hunk while truncating the repetitive middle. * <strong>Impact:</strong> By reducing massive functional blocks (often 100+ lines) to 10-line context summaries and eliminating non-semantic build artifacts, we achieved an estimated <strong>token reduction of &gt;60%</strong> compared to raw full-text diffs, allowing for efficient batch processing without losing semantic context.</p>
 </section>
 <section id="data-processing" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Data Processing</h1>
@@ -420,16 +562,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="1.1" class="anchored" data-anchor-id="commit-classification-using-large-language-models"><span class="header-section-number">1.1</span> Commit Classification Using Large Language Models</h2>
 <p>To distinguish between different types of development activity, we classified each commit as either maintenance-oriented or feature-oriented based on its commit message and diff. Maintenance commits include bug fixes, refactoring, performance improvements, and dependency updates, while feature commits introduce new functionality or expand existing capabilities.</p>
 <p>This classification was performed using a large language model (LLM), which was prompted with the commit message and a summarized diff. In addition to categorical classification, the LLM was asked to assign a relative complexity score reflecting the estimated effort required to complete the task represented by the commit.</p>
+<p>To distinguish between different types of development activity, we classified each commit into one of five mutually exclusive categories</p>
+<section id="classification-schema" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="classification-schema"><span class="header-section-number">1.1.1</span> Classification Schema</h3>
+<ol type="1">
+<li><strong>Memory Safety &amp; Robustness:</strong> Fixes for leaks, segfaults, bounds checks, unsafe blocks, and panics.</li>
+<li><strong>Concurrency &amp; Thread Safety:</strong> Fixes for race conditions, deadlocks, atomicity violations, and Send/Sync trait issues.</li>
+<li><strong>Logic &amp; Correctness:</strong> Fixes for functional bugs, state machine errors, and specification compliance.</li>
+<li><strong>Build, Refactor &amp; Internal:</strong> Non-functional changes, CI/CD, testing, style changes, and dependency management.</li>
+<li><strong>Feature &amp; Value Add:</strong> Implementation of new capabilities, APIs, or performance optimizations.</li>
+</ol>
+<p>This classification was performed using a large language model (LLM), which was prompted with the commit message and the summarized diff. In addition to categorical classification, the LLM assigned a relative <strong>complexity score (1-5)</strong> reflecting the conceptual knowledge required for the task.</p>
 </section>
-<section id="llm-configuration" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="llm-configuration"><span class="header-section-number">1.2</span> LLM Configuration</h2>
-<p>Model used: [Specify model]</p>
-<p>Prompt structure: [Brief description or example]</p>
-<p>Output: Commit type (maintenance vs.&nbsp;feature) and complexity score</p>
+</section>
+<section id="llm-configuration-and-training" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="llm-configuration-and-training"><span class="header-section-number">1.2</span> LLM Configuration and Training</h2>
+<ul>
+<li><strong>Model Used:</strong> Google Gemini 2.0 Flash (Fine-Tuned).</li>
+<li><strong>Infrastructure:</strong> Google Cloud Platform (Vertex AI).</li>
+<li><strong>Synthetic Augmentation:</strong> To address class imbalances, we augmented the training set with high-quality synthetic examples of C and Rust concurrency bugs. This ensured the model could recognize these critical but infrequent patterns.</li>
+<li><strong>Inference:</strong> The full dataset was processed using Vertex AI Batch Prediction, classifying all <strong>182,746 commits</strong>.</li>
+<li><strong>Prompt Structure</strong>: For the prompt structure the system instructions we used was “Role: Expert C/Rust Reviewer. Task: Classify commit. Return ONLY valid JSON.” “Categories (Choose one strictly):” “- ‘Memory Safety &amp; Robustness’ (Bounds, pointers, leaks, unsafe blocks, panics)” “- ‘Concurrency &amp; Thread Safety’ (Atomics, locks, races, Send/Sync)” “- ‘Logic &amp; Correctness’ (Math, state, functional bugs)” “- ‘Build, Refactor &amp; Internal’ (CI, tests, style, deps, cleanup)” “- ‘Feature &amp; Value Add’ (New capabilities, perf)” “Metrics:” “- feat: Boolean (True if Category is Feature)” “- sec: Boolean (True if fixing crash/vuln)” “- comp: Integer 1 (Trivial) to 5 (Complex)” “- reas: String (Max 15 words)” “JSON Schema:” “{"cat": "Category Name", "feat": bool, "sec": bool, "comp": int, "reas": "str"}” ) and each user field was f”Lang: {language} Msg: {commit_message}:“.</li>
+</ul>
+<section id="gold-standard-labeling-methodology-hitl" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="gold-standard-labeling-methodology-hitl"><span class="header-section-number">1.2.1</span> Gold Standard Labeling Methodology (HITL)</h3>
+<p>To create the training dataset, we employed a <strong>Human-in-the-Loop (HITL)</strong> workflow assisted by a “Mini-Lesson” prompt structure. 1. <strong>Mini-Lesson Generation:</strong> For every unlabeled commit, an LLM generated the standard classification JSON <em>plus</em> an extended “Mini-Lesson.” This lesson explained the key syntax involved, the underlying concept, and the reasoning for the specific category value. 2. <strong>Human Verification:</strong> The human labeler reviewed the commit superficially alongside the Mini-Lesson. The label was confirmed only if the Diff, the Category, and the Lesson explanation aligned perfectly. 3. <strong>Ensemble Voting:</strong> In cases of discrepancy or ambiguity, a secondary, independent LLM was queried on the same case. The final label was determined via a voting system (Human + Initial LLM + Secondary LLM) to ensure consensus.</p>
+</section>
 </section>
 <section id="validation" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="validation"><span class="header-section-number">1.3</span> Validation</h2>
 <p>To assess classification reliability, a subset of commits was manually reviewed and compared against the LLM’s outputs. Disagreements were examined qualitatively to identify systematic errors or ambiguities. While LLM-based classification introduces some subjectivity, it enables consistent interpretation of free-text commit messages at scale and provides a practical approach for large-scale maintenance analysis.</p>
+<p>Validation of the model’s performance was conducted via Google Cloud Platform’s internal evaluation framework. During the fine-tuning process, Vertex AI automatically reserved a random <strong>80/20 split</strong> (80% training, 20% validation). The model’s loss metrics on this holdout validation set were monitored to ensure generalization and prevent overfitting to the labeled examples.</p>
+</section>
+<section id="the-commit-complexity-score-ccs" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="the-commit-complexity-score-ccs"><span class="header-section-number">1.4</span> The Commit Complexity Score (CCS)</h2>
+<p>Finally, we calculated a derived metric to quantify the total load of a change. The <strong>Commit Complexity Score (CCS)</strong> combines the qualitative assessment of the LLM with quantitative metrics from Git:</p>
+<p><span class="math display">\[ CCS = (w_1 \cdot C_{cog}) + (w_2 \cdot \log_{10}(Entropy + 1)) + (w_3 \cdot \log_{10}(Churn + 1)) \]</span></p>
+<p>Where <span class="math inline">\(C_{cog}\)</span> is the LLM-assessed complexity, and <span class="math inline">\(Entropy\)</span> and <span class="math inline">\(Churn\)</span> are logarithmic scalings of files touched and lines changed, respectively.</p>
 
 
 <!-- -->
@@ -909,119 +1078,210 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb5" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Data Sources and Preparation"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">### image of the data pipeline and methodology</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Library Selection</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>For our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development life cycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>The table below shows the libraries we choose.</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning = FALSE, message = FALSE}</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="in">commits &lt;- read.csv("Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv")</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="in">library(dplyr)</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning = FALSE, message = FALSE}</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="in">library_summary &lt;- commits %&gt;%</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="in">  filter(!is.na(year)) %&gt;%</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="in">  group_by(language, repo) %&gt;%</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="in">  summarise(</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="in">    total_commits = n(),</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="in">    min_year = min(year),</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="in">    max_year = max(year),</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="in">    year_range = paste0(min_year, "–", max_year),</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="in">    avg_commits_per_year = round(</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="in">      total_commits / (max_year - min_year + 1),</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="in">      2</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="in">    ),</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="in">    .groups = "drop"</span></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="in">  ) %&gt;%</span></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="in">  arrange(desc(total_commits)) %&gt;%</span></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="in">  slice_head(n = 10) %&gt;%</span></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="in">  select(language, repo, total_commits, year_range, avg_commits_per_year)</span></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::kable(</span></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="in">  library_summary,</span></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="in">  caption = "Commit Activity by Language and Repository",</span></span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="in">  col.names = c(</span></span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="in">    "Language",</span></span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="in">    "Repository",</span></span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="in">    "Total Commits",</span></span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="in">    "Year Range",</span></span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="in">    "Avg. Commits / Year"</span></span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="in">  )</span></span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="in">)</span></span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data Sources and Acquisition</span></span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>For each library in our sample, we retrieved the complete commit history from its official GitHub repository using the GitHub REST API. GitHub was chosen as the data source because it provides standardized, time-stamped records of development activity across projects and is the primary collaboration platform for all libraries in our sample.</span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>Each commit record includes:</span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A unique commit identifier</span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A textual commit message describing the change</span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A commit diff summarizing code changes</span>
-<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The author of the commit</span>
-<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A timestamp indicating when the commit was authored</span>
-<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>These commit-level records form the core dataset used in our analysis. An individual row in the dataset corresponds to a single commit made to a given library.</span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key Variables</span></span>
-<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>The table below describes the primary variables extracted from the Github commit data</span>
-<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>| Variable | Description | Type |</span>
-<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>|------------------------|------------------------|------------------------|</span>
-<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>| <span class="in">`commit_diff`</span> | Textual summary of code changes associated with a commit, including files changed and lines added or removed | Text (semi-structured) |</span>
-<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>| <span class="in">`commit_message`</span> | Free-text message describing the purpose or intent of the commit | Text |</span>
-<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>| <span class="in">`timestamp`</span> | Date and time when the commit was authored | Datetime |</span>
-<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>| <span class="in">`author`</span> | Username or identifier of the contributor who authored the commit | Categorical |</span>
-<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>| <span class="in">`library`</span> | Name of the open-source library associated with the commit | Categorical |</span>
-<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>| <span class="in">`language`</span> | Programming language of the library (C or Rust) | Categorical |</span>
-<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>commits <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv"</span>)</span>
-<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: show one clean pipeline, folded by default</span></span>
-<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a><span class="fu"># Data Processing</span></span>
-<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a><span class="fu">## Commit Classification Using Large Language Models</span></span>
-<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a>To distinguish between different types of development activity, we classified each commit as either maintenance-oriented or feature-oriented based on its commit message and diff. Maintenance commits include bug fixes, refactoring, performance improvements, and dependency updates, while feature commits introduce new functionality or expand existing capabilities.</span>
-<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a>This classification was performed using a large language model (LLM), which was prompted with the commit message and a summarized diff. In addition to categorical classification, the LLM was asked to assign a relative complexity score reflecting the estimated effort required to complete the task represented by the commit.</span>
-<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a><span class="fu">## LLM Configuration</span></span>
-<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>Model used: <span class="sc">\[</span>Specify model<span class="sc">\]</span></span>
-<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a>Prompt structure: <span class="sc">\[</span>Brief description or example<span class="sc">\]</span></span>
-<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>Output: Commit type (maintenance vs. feature) and complexity score</span>
-<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a><span class="fu">## Validation</span></span>
-<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a>To assess classification reliability, a subset of commits was manually reviewed and compared against the LLM’s outputs. Disagreements were examined qualitatively to identify systematic errors or ambiguities. While LLM-based classification introduces some subjectivity, it enables consistent interpretation of free-text commit messages at scale and provides a practical approach for large-scale maintenance analysis.</span>
+<div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Data Sources and Preparation"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> html</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## Library Selection</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>For our analysis, we selected a sample of ten widely used open-source libraries: five written in Rust and five written in C. Libraries were chosen using a pairwise matching strategy, where each Rust library was matched with a C library that operates in a similar functional domain (e.g., cryptography, networking, parsing) and serves a comparable role within the software ecosystem.</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>Because C is several decades older than Rust, the C libraries in our sample are generally more mature in terms of age and historical usage. To mitigate bias arising from differences in development life cycle stage, we prioritized libraries that appear to be primarily in a maintenance phase rather than undergoing rapid feature expansion. This assessment was informed by our consultation with our domain expert who is very familiar with systems-level open-source development. We supplemented this with extensive internet research.</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>The table below shows the libraries we choose.</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning = FALSE, message = FALSE}</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="in">commits &lt;- read.csv("Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv")</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="in">library(dplyr)</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning = FALSE, message = FALSE}</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="in">library_summary &lt;- commits %&gt;%</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="in">  filter(!is.na(year)) %&gt;%</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="in">  group_by(language, repo) %&gt;%</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="in">  summarise(</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="in">    total_commits = n(),</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="in">    min_year = min(year),</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="in">    max_year = max(year),</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="in">    year_range = paste0(min_year, "–", max_year),</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="in">    avg_commits_per_year = round(</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="in">      total_commits / (max_year - min_year + 1),</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="in">      2</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="in">    ),</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="in">    .groups = "drop"</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="in">  ) %&gt;%</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="in">  arrange(desc(total_commits)) %&gt;%</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="in">  slice_head(n = 10) %&gt;%</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="in">  select(language, repo, total_commits, year_range, avg_commits_per_year)</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::kable(</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="in">  library_summary,</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="in">  caption = "Commit Activity by Language and Repository",</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="in">  col.names = c(</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="in">    "Language",</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="in">    "Repository",</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="in">    "Total Commits",</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="in">    "Year Range",</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="in">    "Avg. Commits / Year"</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="in">  )</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="in">)</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>| Domain | C Repository | Rust Repository |</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>|:---|:---|:---|</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>| **XML Parsing** | <span class="in">`libxml2`</span> | <span class="in">`quick-xml`</span> |</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>| **HTTP/Networking** | <span class="in">`libcurl`</span> | <span class="in">`hyper`</span> |</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>| **Cryptography/TLS** | <span class="in">`openssl`</span> | <span class="in">`rustls`</span> |</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>| **Database** | <span class="in">`sqlite`</span> | <span class="in">`limbo`</span> |</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>| **System Utilities** | <span class="in">`coreutils`</span> (GNU) | <span class="in">`coreutils`</span> (uutils) |</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data Sources and Acquisition</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>For each library in our sample, we retrieved the complete commit history from its official GitHub repository using the GitHub REST API. GitHub was chosen as the data source because it provides standardized, time-stamped records of development activity across projects and is the primary collaboration platform for all libraries in our sample.</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>Each commit record includes:</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A unique commit identifier</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A textual commit message describing the change</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A commit diff summarizing code changes</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The author of the commit</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A timestamp indicating when the commit was authored</span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>These commit-level records form the core dataset used in our analysis. An individual row in the dataset corresponds to a single commit made to a given library.</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key Variables</span></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>The table below describes the primary variables extracted from the Github commit data</span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>| Variable | Description | Type |</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>|------------------------|------------------------|------------------------|</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>| <span class="in">`commit_diff`</span> | Textual summary of code changes associated with a commit, including files changed and lines added or removed | Text (semi-structured) |</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>| <span class="in">`commit_message`</span> | Free-text message describing the purpose or intent of the commit | Text |</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>| <span class="in">`timestamp`</span> | Date and time when the commit was authored | Datetime |</span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>| <span class="in">`author`</span> | Username or identifier of the contributor who authored the commit | Categorical |</span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>| <span class="in">`library`</span> | Name of the open-source library associated with the commit | Categorical |</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>| <span class="in">`language`</span> | Programming language of the library (C or Rust) | Categorical |</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>commits <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"Data/FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv"</span>)</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>To ensure accurate interpretation of this raw data—specifically regarding the subtleties of memory management and concurrency in systems languages—we employed a "Pre-Validation" strategy. This involved a targeted "Crash Course" methodology where we cataloged language-specific failure modes (e.g., "double-free" errors in C vs. "borrow checker violations" in Rust). This domain knowledge was applied to a subset of commits to validate our labeling schema, ensuring that our downstream classifications reflected true engineering intent rather than keywords.</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a><span class="fu">## Variables after LLM classification</span></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>The table below describes the primary variables extracted and engineered for our final dataset.</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>| Variable | Description | Type |</span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>|:---|:---|:---|</span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>| <span class="in">`commit_id`</span> | Unique SHA-1 identifier for the commit. | String |</span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>| <span class="in">`commit_diff`</span> | Smartly truncated textual summary of code changes. | Text |</span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>| <span class="in">`commit_message`</span> | Free-text message describing the intent of the commit. | Text |</span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>| <span class="in">`language`</span> | Programming language of the library (C or Rust). | Categorical |</span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>| <span class="in">`repo`</span> | Name of the open-source library. | Categorical |</span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>| <span class="in">`category`</span> | The inferred intent (e.g., "Memory Safety", "Feature"). | Categorical |</span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>| <span class="in">`complexity`</span> | LLM-assessed cognitive load (1-5). | Integer |</span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>| <span class="in">`entropy`</span> | Number of files modified in the commit. | Integer |</span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>| <span class="in">`churn`</span> | Total lines added and removed. | Integer |</span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>| <span class="in">`ccs_score`</span> | Calculated Commit Complexity Score (derived metric). | Float |</span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>| <span class="in">`year`</span> | Year the commit was authored. | Integer |</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data Cleaning</span></span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>Raw git data is inherently noisy. We implemented a custom **Extract-Transform-Load (ETL) pipeline** to prepare the data for analysis.</span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>**1. Unicode Sanitization**</span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>Legacy C repositories (specifically <span class="in">`libxml2`</span>) contain historical commits with non-UTF-8 encodings (e.g., Latin-1). We implemented a sanitization layer using Python’s <span class="in">`surrogateescape`</span> error handler to ensure all textual data was valid UTF-8 before processing.</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>**2. Smart Diff Truncation ("The Accordion")**</span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>A major challenge in code analysis is the context window limit of LLMs. A raw diff can span thousands of lines (e.g., auto-generated documentation or build artifacts). To address this, we developed a "Smart Truncation" algorithm using the <span class="in">`unidiff`</span> library.</span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Noise Filtering:** Files related to documentation (<span class="in">`.html`</span>), assets, and lockfiles were stripped of content, preserving only the filename.</span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Accordion Logic:** For large code files, the algorithm preserves the "Head" (first 5 lines) and "Tail" (last 5 lines) of a change hunk while truncating the repetitive middle. </span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Impact:** By reducing massive functional blocks (often 100+ lines) to 10-line context summaries and eliminating non-semantic build artifacts, we achieved an estimated **token reduction of &gt;60%** compared to raw full-text diffs, allowing for efficient batch processing without losing semantic context.</span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a><span class="fu"># Data Processing</span></span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="fu">## Commit Classification Using Large Language Models</span></span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>To distinguish between different types of development activity, we classified each commit as either maintenance-oriented or feature-oriented based on its commit message and diff. Maintenance commits include bug fixes, refactoring, performance improvements, and dependency updates, while feature commits introduce new functionality or expand existing capabilities.</span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>This classification was performed using a large language model (LLM), which was prompted with the commit message and a summarized diff. In addition to categorical classification, the LLM was asked to assign a relative complexity score reflecting the estimated effort required to complete the task represented by the commit.</span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>To distinguish between different types of development activity, we classified each commit into one of five mutually exclusive categories </span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a><span class="fu">### Classification Schema </span></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Memory Safety &amp; Robustness:** Fixes for leaks, segfaults, bounds checks, unsafe blocks, and panics.</span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Concurrency &amp; Thread Safety:** Fixes for race conditions, deadlocks, atomicity violations, and Send/Sync trait issues.</span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Logic &amp; Correctness:** Fixes for functional bugs, state machine errors, and specification compliance.</span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Build, Refactor &amp; Internal:** Non-functional changes, CI/CD, testing, style changes, and dependency management.</span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Feature &amp; Value Add:** Implementation of new capabilities, APIs, or performance optimizations.</span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>This classification was performed using a large language model (LLM), which was prompted with the commit message and the summarized diff. In addition to categorical classification, the LLM assigned a relative **complexity score (1-5)** reflecting the conceptual knowledge required for the task.</span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a><span class="fu">## LLM Configuration and Training</span></span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Model Used:** Google Gemini 2.0 Flash (Fine-Tuned).</span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Infrastructure:** Google Cloud Platform (Vertex AI).</span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Synthetic Augmentation:** To address class imbalances, we augmented the training set with high-quality synthetic examples of C and Rust concurrency bugs. This ensured the model could recognize these critical but infrequent patterns.</span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Inference:** The full dataset was processed using Vertex AI Batch Prediction, classifying all **182,746 commits**.</span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Prompt Structure**: For the prompt structure the system instructions we used was </span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>"Role: Expert C/Rust Reviewer. Task: Classify commit. Return ONLY valid JSON.\n"</span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>    "Categories (Choose one strictly):\n"</span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>    "- 'Memory Safety &amp; Robustness' (Bounds, pointers, leaks, unsafe blocks, panics)\n"</span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a>    "- 'Concurrency &amp; Thread Safety' (Atomics, locks, races, Send/Sync)\n"</span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>    "- 'Logic &amp; Correctness' (Math, state, functional bugs)\n"</span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>    "- 'Build, Refactor &amp; Internal' (CI, tests, style, deps, cleanup)\n"</span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>    "- 'Feature &amp; Value Add' (New capabilities, perf)\n\n"</span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>    "Metrics:\n"</span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>    "- feat: Boolean (True if Category is Feature)\n"</span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a>    "- sec: Boolean (True if fixing crash/vuln)\n"</span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a>    "- comp: Integer 1 (Trivial) to 5 (Complex)\n"</span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a>    "- reas: String (Max 15 words)\n\n"</span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a>    "JSON Schema:\n"</span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>    "{\"cat\": \"Category Name\", \"feat\": bool, \"sec\": bool, \"comp\": int, \"reas\": \"str\"}"</span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>and each user field was f"Lang: {language} Msg: {commit_message}\nDiff:\n{cleaned_diff}".</span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a><span class="fu">### Gold Standard Labeling Methodology (HITL)</span></span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a>To create the training dataset, we employed a **Human-in-the-Loop (HITL)** workflow assisted by a "Mini-Lesson" prompt structure. </span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Mini-Lesson Generation:** For every unlabeled commit, an LLM generated the standard classification JSON *plus* an extended "Mini-Lesson." This lesson explained the key syntax involved, the underlying concept, and the reasoning for the specific category value.</span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Human Verification:** The human labeler reviewed the commit superficially alongside the Mini-Lesson. The label was confirmed only if the Diff, the Category, and the Lesson explanation aligned perfectly.</span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Ensemble Voting:** In cases of discrepancy or ambiguity, a secondary, independent LLM was queried on the same case. The final label was determined via a voting system (Human + Initial LLM + Secondary LLM) to ensure consensus.</span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a><span class="fu">## Validation</span></span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>To assess classification reliability, a subset of commits was manually reviewed and compared against the LLM’s outputs. Disagreements were examined qualitatively to identify systematic errors or ambiguities. While LLM-based classification introduces some subjectivity, it enables consistent interpretation of free-text commit messages at scale and provides a practical approach for large-scale maintenance analysis.</span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a>Validation of the model's performance was conducted via Google Cloud Platform's internal evaluation framework. During the fine-tuning process, Vertex AI automatically reserved a random **80/20 split** (80% training, 20% validation). The model's loss metrics on this holdout validation set were monitored to ensure generalization and prevent overfitting to the labeled examples.</span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Commit Complexity Score (CCS)</span></span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a>Finally, we calculated a derived metric to quantify the total load of a change. The **Commit Complexity Score (CCS)** combines the qualitative assessment of the LLM with quantitative metrics from Git:</span>
+<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a>$$ CCS = (w_1 \cdot C_{cog}) + (w_2 \cdot \log_{10}(Entropy + 1)) + (w_3 \cdot \log_{10}(Churn + 1)) $$</span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a>Where $C_{cog}$ is the LLM-assessed complexity, and $Entropy$ and $Churn$ are logarithmic scalings of files touched and lines changed, respectively.</span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a></span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

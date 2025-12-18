@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Blake Kell, Kudzai Dhewa">
-<meta name="dcterms.date" content="2025-12-16">
+<meta name="dcterms.date" content="2025-12-17">
 
 <title>Maintenance Burden Estimation: A comparative study between C and Rust Open Source Packages – C vs Rust</title>
 <style>
@@ -140,16 +140,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Limitations</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./contributions.html"> 
-<span class="menu-text">Contributions</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="./feedback.html"> 
 <span class="menu-text">Expert Feedback</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./appendix.html"> 
-<span class="menu-text">Appendix</span></a>
+<span class="menu-text">Appendix &amp; References</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -168,9 +164,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
-  <li><a href="#through-engagements-with-our-domain-expert-josh-aas-we-learnt-about-a-c-open-source-library-called-libxml2.-this-is-a-a-widely-used-xml-parser-that-is-used-to-create-and-manipulate-xml-documents.-it-comes-preinstalled-on-most-unix-based-systems-including-linux-android-ios-macos-and-chromeos.-however-this-critical-open-source-library-is-currently-running-short-of-maintainers-and-our-expert-is-in-the-process-of-figuring-out-if-it-is-reasonable-to-migrate-the-library-to-rust-instead-of-sourcing-maintainers-for-it-in-c." id="toc-through-engagements-with-our-domain-expert-josh-aas-we-learnt-about-a-c-open-source-library-called-libxml2.-this-is-a-a-widely-used-xml-parser-that-is-used-to-create-and-manipulate-xml-documents.-it-comes-preinstalled-on-most-unix-based-systems-including-linux-android-ios-macos-and-chromeos.-however-this-critical-open-source-library-is-currently-running-short-of-maintainers-and-our-expert-is-in-the-process-of-figuring-out-if-it-is-reasonable-to-migrate-the-library-to-rust-instead-of-sourcing-maintainers-for-it-in-c." class="nav-link" data-scroll-target="#through-engagements-with-our-domain-expert-josh-aas-we-learnt-about-a-c-open-source-library-called-libxml2.-this-is-a-a-widely-used-xml-parser-that-is-used-to-create-and-manipulate-xml-documents.-it-comes-preinstalled-on-most-unix-based-systems-including-linux-android-ios-macos-and-chromeos.-however-this-critical-open-source-library-is-currently-running-short-of-maintainers-and-our-expert-is-in-the-process-of-figuring-out-if-it-is-reasonable-to-migrate-the-library-to-rust-instead-of-sourcing-maintainers-for-it-in-c."><span class="header-section-number">2</span> Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C.</a></li>
-  <li><a href="#research-questions" id="toc-research-questions" class="nav-link" data-scroll-target="#research-questions"><span class="header-section-number">3</span> Research Questions</a></li>
-  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link" data-scroll-target="#why-this-matters"><span class="header-section-number">4</span> Why This Matters</a></li>
+  <li><a href="#research-questions" id="toc-research-questions" class="nav-link" data-scroll-target="#research-questions"><span class="header-section-number">2</span> Research Questions</a></li>
+  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link" data-scroll-target="#why-this-matters"><span class="header-section-number">3</span> Why This Matters</a></li>
   </ul>
 </nav>
     </div>
@@ -196,7 +191,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 16, 2025</p>
+      <p class="date">December 17, 2025</p>
     </div>
   </div>
   
@@ -210,24 +205,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="overview" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1</span> Overview</h2>
-</section>
-<section id="through-engagements-with-our-domain-expert-josh-aas-we-learnt-about-a-c-open-source-library-called-libxml2.-this-is-a-a-widely-used-xml-parser-that-is-used-to-create-and-manipulate-xml-documents.-it-comes-preinstalled-on-most-unix-based-systems-including-linux-android-ios-macos-and-chromeos.-however-this-critical-open-source-library-is-currently-running-short-of-maintainers-and-our-expert-is-in-the-process-of-figuring-out-if-it-is-reasonable-to-migrate-the-library-to-rust-instead-of-sourcing-maintainers-for-it-in-c." class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="through-engagements-with-our-domain-expert-josh-aas-we-learnt-about-a-c-open-source-library-called-libxml2.-this-is-a-a-widely-used-xml-parser-that-is-used-to-create-and-manipulate-xml-documents.-it-comes-preinstalled-on-most-unix-based-systems-including-linux-android-ios-macos-and-chromeos.-however-this-critical-open-source-library-is-currently-running-short-of-maintainers-and-our-expert-is-in-the-process-of-figuring-out-if-it-is-reasonable-to-migrate-the-library-to-rust-instead-of-sourcing-maintainers-for-it-in-c."><span class="header-section-number">2</span> Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C.</h2>
+<p>Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C.</p>
 <p><img src="images/news_article.jpeg" class="img-fluid"><br>
 </p>
 <p>As a broader research topic to try and help him answer this question we decided to try and estimate the maintenance burden of C libraries versus Rust libraries with hope that our data centric results will help the expert make a more informed decision.</p>
 <p>C is a mature systems programming language that originated in the 1970s, and Rust is a much younger language with performance comparable to C that began development in the 2010s. Rust is widely recognized for being more memory safe than C because its compiler enforces strict rules about how memory is used, preventing many common memory errors before the code even runs. In contrast, C allows unrestricted memory access, meaning the compiler will happily build programs even if they contain unsafe memory operations, leaving it up to the programmer to catch mistakes. As a result, there is a general consensus that programmers make fewer memory-related errors when coding in Rust compared to C because Rust’s guardrails catch many mistakes at compile time, whereas C provides almost no such protections. Memory safety is important because most serious software bugs come from memory errors such as security vulnerabilities, crasher, and corrupted data. To learn more about memory safety and the differences between Rust and C reference this article: <a href="https://knathanael.com/posts/what_makes_rust_safer_than_c/">What Makes Rust Safer Than C</a></p>
 <p>This information is important because it informs our initial hypothesis that rust allows less mistakes in the development phase than C and therefore requires less maintenance than C in the long run.</p>
 </section>
-<section id="research-questions" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="research-questions"><span class="header-section-number">3</span> Research Questions</h2>
+<section id="research-questions" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="research-questions"><span class="header-section-number">2</span> Research Questions</h2>
 <p><strong>RQ1:</strong></p>
 <p>Is the maintenance burden of open-source libraries lower for projects written in Rust compared to those written in C?</p>
 <p><strong>RQ2:</strong></p>
 <p>What maintenance activities are most common in C vs Rust open source libraries?</p>
 </section>
-<section id="why-this-matters" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="why-this-matters"><span class="header-section-number">4</span> Why This Matters</h2>
+<section id="why-this-matters" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="why-this-matters"><span class="header-section-number">3</span> Why This Matters</h2>
 <p>This matters because it directly influences our expert’s decision of migrating the libxml2 library from C to Rust.</p>
 
 
@@ -715,7 +708,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Overview</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C.</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Through engagements with our domain expert, Josh Aas, we learnt about a C Open Source Library called libxml2. This is a a widely used XML parser that is used to create and manipulate XML documents. It comes preinstalled on most UNIX-based systems, including Linux, Android, iOS, macOS, and ChromeOS. However, this critical open-source library is currently running short of maintainers and our expert is in the process of figuring out if it is reasonable to migrate the library to Rust instead of sourcing maintainers for it in C.</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/news_article.jpeg)</span>\</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>

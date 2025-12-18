@@ -1,1 +1,9 @@
+---
+title: "Limitations"
+format: html
+---
 
+ 1. C is much more mature than Rust, making it challenging to find truly comparable libraries.
+
+2.  Regressions to validate correlation between reduction in memory safety maintenance and increase in feature work are missing. This is an area for future exploration.
+3.  LLM-based complexity score might not be the most accurate measurement approach as complexity is somewhat object and might vary from developer to developer.

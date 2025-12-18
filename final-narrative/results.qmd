@@ -3,7 +3,7 @@ title: "Results"
 format: html
 ---
 
-## 1. What are developers focusing on (Maintenance /Feature)
+## What are developers focusing on (Maintenance /Feature)
 
 ```{r}
 #| label: fig-language-tax
@@ -22,7 +22,7 @@ knitr::include_graphics("visualizations/diverging_distribution_delta.png")
 
 ------------------------------------------------------------------------
 
-## 2. Quantifying the Memory Safety Gap
+## Quantifying the Memory Safety Gap
 
 This section drills down into the specific distribution of maintenance categories to quantify the magnitude of the safety difference.
 
@@ -41,7 +41,7 @@ knitr::include_graphics("visualizations/normalized_category_distribution_by_lang
 
 ------------------------------------------------------------------------
 
-## 3. Cognitive Load Analysis: The "Shift Left" Effect
+## Cognitive Load Analysis: The "Shift Left" Effect
 
 Having established the *volume* of work, we now analyze the *nature* of the work using our Commit Complexity Score (CCS).
 
@@ -66,7 +66,7 @@ knitr::include_graphics("visualizations/ccs_by_language.png")
 
 ------------------------------------------------------------------------
 
-## 4. Domain-Specific Consistency
+## Domain-Specific Consistency
 
 To ensure these findings are not artifacts of a single outlier project, we validated the trends across distinct functional domains.
 
@@ -98,8 +98,6 @@ maintenance_avg <- commits %>%
     n_commits = n(),
   )
 
-maintenance_avg
-
 
 maintenance_avg <- maintenance_avg %>%
   filter(n_commits >= 3)
@@ -113,7 +111,7 @@ maintenance_avg <- commits %>%
     n_commits = n(),
   )
 
-maintenance_avg
+
 
 
 maintenance_avg <- maintenance_avg %>%
@@ -151,13 +149,15 @@ ggplot(
 
 
 
+
+
 ```
 
 ```{r, message = FALSE, warning = FALSE}
 
 #| fig-width: 14
 #| fig-height: 8
-#| fig-align: center
+#| fig-align: centerd
 
 
 
@@ -207,14 +207,21 @@ ggplot(
   )
 
 
+
+
+
+
 ```
 
-------------------------------------------------------------------------
+### Key Findings
 
-## 5. Summary of Results
+-   Overall, from the first line graph Rust (blue line) consistent has **lower average maintenance complexity scores**, which suggests lower long-run maintenance burden.
+-   From the second line graph that breaks it down to categories it seems memory-safety commits (purple line) in Rust tend to be **more complex than in C**. This is a good gut check for our initial claim that Rust is stricter when it comes to memory safety compared to ”
 
-Our multi-modal classification pipeline, applied to 180,000 commits, provides strong quantitative evidence for the economic advantages of Rust:
+## Summary of Results
+
+Our multi-modal classification pipeline, applied to 180,000 commits, provides strong quantitative evidence for the advantages of Rust over C:
 
 1.  **Reduction of Risk:** Rust reduces the proportion of memory safety maintenance work by approximately **3x**.
 2.  **Reallocation of Resources:** There is a near-perfect correlation between the reduction in memory safety maintenance work and the increase in feature development work.
-3.  **Efficiency of Complexity:** While Rust commits are marginally more complex, this upfront investment effectively eradicates entire classes of high-risk bugs, resulting in a more efficient long-term maintenance profile.
+3.  Rust commits are more complex for memory safety, but this upfront investment results in efficient long-term maintenance.

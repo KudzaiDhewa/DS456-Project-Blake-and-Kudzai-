@@ -1,4 +1,18 @@
 ---
-title: "appendix"
+title: "Appendix"
 format: html
 ---
+
+1.) The dataset used in this analysis is available [here](https://drive.google.com/file/d/1nurbBYEEykpeqPrbhWTsxw0UXfcMHnr9/view?usp=drive_link).
+
+2.) Link to repo
+
+References:
+
+-   Libxml2 Becomes Officially Unmaintained After Maintainer Steps Down: <https://linuxiac.com/libxml2-becomes-officially-unmaintained/>
+
+-   What Makes Rust Safer Than C: <https://knathanael.com/posts/what_makes_rust_safer_than_c/>
+
+-   Rust in Android: move fast and fix things: <https://security.googleblog.com/2025/11/rust-in-android-move-fast-fix-things.html>
+
+**AI usage statement:** This project used generative AI tools to assist with classifying GitHub commits into feature and maintenance categories, assigning maintenance subtypes, and estimating a rough complexity score based on commit messages and diffs. AI was also used to support code debugging and to improve clarity and conciseness of written explanations. All data collection, analytical design, interpretation of results, and final conclusions were produced by the authors.

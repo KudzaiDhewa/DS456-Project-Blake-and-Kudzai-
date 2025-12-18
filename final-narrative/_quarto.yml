@@ -14,11 +14,9 @@ website:
         href: results.qmd
       - text: "Limitations"
         href: limitations.qmd
-      - text: "Contributions"
-        href: contributions.qmd
       - text: "Expert Feedback"
         href: feedback.qmd
-      - text: "Appendix"
+      - text: "Appendix & References"
         href: appendix.qmd
      
 

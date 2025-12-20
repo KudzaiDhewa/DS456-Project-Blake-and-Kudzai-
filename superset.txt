@@ -1,0 +1,24 @@
+"Memory Safety & Robustness" (Category "cat")
+Buffer Overflows/Overreads (memcpy bounds, off-by-one).
+Resource Management (Memory leaks, unclosed files).
+Pointer Errors (Null dereference, Use-After-Free, Double Free, dangling pointers).
+Undefined Behavior (Integer overflows causing crashes, uninitialized memory).
+
+
+"Concurrency & Thread Safety"
+Data Races (Read/write without locking).
+Locking Issues (Deadlocks, livelocks, improper mutex usage).
+Atomics (Memory ordering, relaxed vs seq_cst).
+
+"Logic & Correctness"
+Algorithmic Errors (Math, sorting, wrong return values).
+Validation (Input parsing that doesn't crash but is wrong).
+Error Handling (Ignoring return codes like malloc failure).
+
+"Build, Refactor & Internal"
+Build System (Makefile, CMake, Configure).
+Code Structure (Renaming, style, linting, moving files).
+Deprecation (Updating to C99/C11 standards).
+
+"Feature & Value Add"
+New capabilities, APIs, or performance optimizations (not bug fixes).

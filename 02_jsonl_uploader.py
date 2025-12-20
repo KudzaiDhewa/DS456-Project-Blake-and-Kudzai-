@@ -1,119 +1,176 @@
 import os
 import json
+import glob
 import pandas as pd
 from dotenv import load_dotenv
 from google.cloud import storage
+from prompt_config import SYSTEM_INSTRUCTION_TEXT
 
-# --- Configuration ---
+# Load environment variables
 load_dotenv()
+
+# --- CONFIGURATION ---
 PROJECT_ID = os.getenv("PROJECT_ID")
-REGION = os.getenv("REGION")
-GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME") # e.g., "my-vertex-ai-finetuning-bucket"
-BLOB_TRAINING_DESTINATION = os.getenv("BLOB_TRAINING_DESTINATION")
-BLOB_BATCHING_TO_CLASSIFY_DESTINATION = os.getenv("BLOB_BATCHING_TO_CLASSIFY_DESTINATION")
-LOCAL_REPO_PATH = "./repos/c/libxml2"
-EXISTING_GOLD_STANDARD_CSV = "gold_standard_sample/labeled_commits.csv" # Your V1 classified data
-OUTPUT_FOR_REVIEW_JSONL = "gold_standard_sample/500_sample.jsonl" # The final output for you to review
-FULL_COMMIT_JSONL = "full_commit_jsonl/FULL_commit_toclassify.jsonl"
+GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME") 
 
+# Destination Paths in Bucket
+BLOB_TRAINING_DESTINATION = "training_data/final_mixed_model.jsonl"
+BLOB_BATCH_DESTINATION_PREFIX = "batch_inputs/"
 
-# --- ADD THIS VALIDATION BLOCK ---
-if not PROJECT_ID:
-    raise ValueError("FATAL: Environment variable PROJECT_ID is not set.")
-if not REGION:
-    raise ValueError("FATAL: Environment variable REGION is not set.")
-if not GCS_BUCKET_NAME:
-    raise ValueError("FATAL: Environment variable GCS_BUCKET_NAME is not set.")
-if not BLOB_TRAINING_DESTINATION:
-    raise ValueError("FATAL: Environment variable BLOB_TRAINING_DESTINATION is not set.")
-if not BLOB_BATCHING_TO_CLASSIFY_DESTINATION:
-    raise ValueError("FATAL: Environment variable BLOB_BATCHING_DESTINATION is not set.")
+# Path to your labeled data (merged gold standard from Phase 01)
+GOLD_MERGED_PATH = "gold_standard_sample_labeled/labeled_gold_standard_merged.csv"
+JSONL_DIR_BASE = "full_commit_jsonl"
 
-# for use in my human in the loop classifcation
+# Robust Mapping for Labels
+CATEGORY_MAP = {
+    "Memory": "Memory Safety & Robustness",
+    "Memory Safety": "Memory Safety & Robustness",
+    "Concurrency": "Concurrency & Thread Safety",
+    "Thread Safety": "Concurrency & Thread Safety",
+    "Logic": "Logic & Correctness",
+    "Logic Error": "Logic & Correctness",
+    "Refactor": "Build, Refactor & Internal",
+    "Build": "Build, Refactor & Internal",
+    "Maintenance": "Build, Refactor & Internal",
+    "Feature": "Feature & Value Add",
+    "Feat": "Feature & Value Add"
+}
 
-# The "decoupled" prompt for the general model
-ALL_CATEGORIES = [
-    "Parser Logic", "Memory", "General Logic Error", "API Logic", "Security Vulnerability (CVE)",
-    "Integer", "Error Handling", "Concurrency", "Type System", "State Management", "Performance",
-    "Incorrect Output/Calculation", "Standard Library Misuse", "Build/CI/Tests", "Refactoring",
-    "Documentation", "Feature/Enhancement", "Non-Maintenance"
-]
-INSTRUCTION_PROMPT = (
-    "You are a world-class software engineering analyst specializing in C code. "
-    "Your primary evidence must be the code_diff. Analyze it to determine the bug's root cause. "
-    "Use the commit_message only as a secondary clue if the code is ambiguous. "
-    f"Respond ONLY with a valid JSON object containing 'is_bug_fix', 'category', and 'reasoning'. Available categories are: {json.dumps(ALL_CATEGORIES)}"
-)
+def clean_text(text):
+    """Handles Excel encoding artifacts and line endings."""
+    if not isinstance(text, str): return ""
+    return text.replace('\r\n', '\n').strip()
 
+def clean_reasoning(text):
+    """Truncates reasoning to max 15 words."""
+    text = clean_text(str(text))
+    text = text.replace("\n", " ")
+    words = text.split()
+    if len(words) > 15:
+        return " ".join(words[:15]) + "..."
+    return text
 
-def upload_to_gcs(project_id,bucket_name, source_file_name, destination_blob_name):
-    """Uploads a file to the bucket."""
-    storage_client = storage.Client(project_id)
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
-    blob.upload_from_filename(source_file_name)
-    print(f"File {source_file_name} uploaded to gs://{bucket_name}/{destination_blob_name}")
-    return f"gs://{bucket_name}/{destination_blob_name}"
+def parse_bool(value):
+    """Handles Excel's TRUE/False/1/0 variations."""
+    s = str(value).upper().strip()
+    return s in ['TRUE', '1', 'T', 'YES', 'Y']
 
-def create_jsonl_from_df_training(df, output_filename):
-    """Converts a DataFrame to a JSONL file in the required format."""
-    prompt_template = (
-       "You are a world-class software engineering analyst specializing in the libxml2 library. "
-            "Analyze the following commit message and code diff, then classify it. "
-            "Respond ONLY with a valid JSON object containing 'is_bug_fix', 'category', and 'reasoning'.\n\n"
-             f"AVAILABLE CATEGORIES:\n{json.dumps(ALL_CATEGORIES)}\n\n"
-            "--- COMMIT MESSAGE ---\n{commit_message}"
-            "--- CODE DIFF ---\n{diff_text}"
-    )
-    with open(output_filename, 'w') as f:
-        for index, row in df.iterrows():
-            commit_message = row['message_x']
-            diff_text = row['diff']
-            is_bug = bool(row['is_bug_fix'])
+def normalize_category(raw_cat):
+    """Ensures category matches the valid list exactly."""
+    raw_cat = str(raw_cat).strip()
+    for key, val in CATEGORY_MAP.items():
+        if raw_cat.lower() == key.lower():
+            return val
+    if raw_cat in CATEGORY_MAP.values():
+        return raw_cat
+    print(f"[WARNING] Unknown category '{raw_cat}'. Defaulting to 'Build, Refactor & Internal'")
+    return "Build, Refactor & Internal"
+
+def format_training_prompt(language, commit_message, cleaned_diff):
+    return f"Lang: {language} Msg: {commit_message}\nDiff:\n{cleaned_diff}"
+
+def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
+    try:
+        storage_client = storage.Client(project=PROJECT_ID)
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(destination_blob_name)
+        blob.upload_from_filename(source_file_name)
+        print(f"✅ Uploaded: gs://{bucket_name}/{destination_blob_name}")
+    except Exception as e:
+        print(f"❌ Error uploading {destination_blob_name}: {e}")
+
+def create_fine_tuning_jsonl(merged_df, output_filename):
+    print(f"Generating {output_filename}...")
+    with open(output_filename, 'w', encoding='utf-8') as f:
+        for index, row in merged_df.iterrows():
             
-            # The structure for the fine-tuning job
-            assistant_output_dict = {
-                "is_bug_fix": is_bug,
-                "category": row['category_v2_general_model'],
-                "reasoning": row['reasoning_v2']
+            # 1. Skip rows without a category label
+            if pd.isna(row['label_category']) or str(row['label_category']).strip() == "":
+                continue
+
+            # 2. Prepare User Input
+            lang = row['language_inferred']
+            diff_text = clean_text(row['diff_preview'])
+            user_text = format_training_prompt(
+                lang,
+                clean_text(row['message']), 
+                diff_text
+            )
+
+            # 3. Prepare Model Output
+            try:
+                comp_score = int(float(row['label_complexity']))
+            except(ValueError, TypeError):
+                comp_score = 1 
+
+            model_response = {
+                "cat": normalize_category(row['label_category']),
+                "feat": parse_bool(row['label_is_feature']),
+                "sec": parse_bool(row['label_is_security']),
+                "comp": comp_score,
+                "reas": clean_reasoning(row['label_reasoning'])
             }
-            # This is the final structure for a single training example,
-            # mirroring the Gemini API 'GenerateContent' request format.
-            training_example = {
+
+            # 4. Write Entry (Correct Vertex AI Gemini Format)
+            entry = {
+                "systemInstruction": {
+                    "role": "system", 
+                    "parts": [{"text": SYSTEM_INSTRUCTION_TEXT}]
+                },
                 "contents": [
                     {
-                        "role": "user",
-                        "parts": [{"text": prompt_template.format(commit_message=commit_message,diff_text=diff_text)}]
+                        "role": "user", 
+                        "parts": [{"text": user_text}]
                     },
                     {
-                        "role": "model",  # Use 'model' for the assistant's role
-                        "parts": [{"text": json.dumps(assistant_output_dict)}]
+                        "role": "model", 
+                        "parts": [{"text": json.dumps(model_response)}]
                     }
                 ]
             }
-            f.write(json.dumps(training_example) + "\n")
-    print(f"Successfully created {output_filename}")
+            f.write(json.dumps(entry) + "\n")
+            
+    print(f"Refined training data saved locally to: {output_filename}")
 
-
-       
 if __name__ == "__main__":
-    # 1. Load your existing V1 gold standard data
-    #df_gold_sample = pd.read_csv(EXISTING_GOLD_STANDARD_CSV)
+    if not PROJECT_ID or not GCS_BUCKET_NAME:
+        print("❌ Error: Missing .env variables (PROJECT_ID or GCS_BUCKET_NAME)")
+        exit(1)
 
-    #df_upload = df_gold_sample[['commit_id','message','diff','category_v2_general_model','reasoning_v2']].copy()
-    #print(f"Loaded {len(df_gold_sample)} commits from the existing gold standard.")
+    # --- 1. LOAD MERGED LABELED DATA ---
+    if not os.path.exists(GOLD_MERGED_PATH):
+        print(f"❌ ERROR: Merged labeled CSV not found at {GOLD_MERGED_PATH}")
+        print("Run 09_merge_labeled_gold_standard.py first.")
+        exit(1)
+
+    print(f"Loading merged labeled data from {GOLD_MERGED_PATH}...")
+    full_training_df = pd.read_csv(GOLD_MERGED_PATH, dtype=str).fillna("")
+    print(f"Total labeled rows found: {len(full_training_df)}")
+
+    TRAINING_FILE_LOCAL = "final_mixed_training_data.jsonl"
+    create_fine_tuning_jsonl(full_training_df, TRAINING_FILE_LOCAL)
+
+    # --- 3. UPLOAD TRAINING DATA ---
+    #upload_to_gcs(GCS_BUCKET_NAME, TRAINING_FILE_LOCAL, BLOB_TRAINING_DESTINATION)
+
+    # --- 4. UPLOAD BATCH INPUTS ---
+    '''
+    print("\nUploading Inference Batches...")
+    found_batches = False
+    for root, dirs, files in os.walk(JSONL_DIR_BASE):
+        for file in files:
+            if file.startswith("BATCH_input") and file.endswith(".jsonl"):
+                found_batches = True
+                local_path = os.path.join(root, file)
+                subdir = os.path.basename(root)
+                if subdir not in ['c', 'rust']:
+                    blob_path = f"{BLOB_BATCH_DESTINATION_PREFIX}{file}"
+                else:
+                    blob_path = f"{BLOB_BATCH_DESTINATION_PREFIX}{subdir}/{file}"
+                upload_to_gcs(GCS_BUCKET_NAME, local_path, blob_path)
+    '''
+    if not found_batches:
+        print("⚠️ WARNING: No BATCH_input files found.")
     
-
-    #df_gold_sample.dropna(subset=['diff'], inplace=True)
-
-
-    
-    #create_jsonl_from_df_training(df_gold_sample,OUTPUT_FOR_REVIEW_JSONL)
-
-    #upload_to_gcs(PROJECT_ID,GCS_BUCKET_NAME,OUTPUT_FOR_REVIEW_JSONL,BLOB_TRAINING_DESTINATION)
-    upload_to_gcs(PROJECT_ID,GCS_BUCKET_NAME,FULL_COMMIT_JSONL,BLOB_BATCHING_TO_CLASSIFY_DESTINATION)
-    
-    print("\n--- Success! ---")
-    print(f"Created review file: {OUTPUT_FOR_REVIEW_JSONL}")
-     
-   
+    print("\n--- PHASE 02 COMPLETE ---")
+    print(f"Training Data: gs://{GCS_BUCKET_NAME}/{BLOB_TRAINING_DESTINATION}")

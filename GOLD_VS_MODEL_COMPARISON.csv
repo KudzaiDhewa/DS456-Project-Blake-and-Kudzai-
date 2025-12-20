@@ -1,0 +1,201 @@
+commit_id,category_match,label_category,model_category,is_security_match,label_is_security,model_is_security,is_feature_match,label_is_feature,model_is_feature,complexity_match,label_complexity,model_complexity
+8b877135a38aac58141e81c2894bc28ad7f0e642,True,Logic & Correctness,Logic & Correctness,True,False,False,True,FALSE,False,False,3,2.0
+6d373a26fff17281ac1c872adae95b14727ca959,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+6c73cb8b67f3332b6bd2b2ff0480482770713838,True,Feature & Value Add,Feature & Value Add,True,False,False,True,TRUE,True,False,1,2.0
+6bd26dc2d0d57212c9aa3925a9985deca51e58af,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+abd74186f972fc51e95b9ebdfd028131d8249aeb,True,Memory Safety & Robustness,Memory Safety & Robustness,False,True,False,True,FALSE,False,True,5,5.0
+a617e24f32c8b2fd7ec68c77389dbac6702ee85d,False,Logic & Correctness,Memory Safety & Robustness,False,False,True,True,FALSE,False,False,3,5.0
+8d7e38d536fc020bd7510c82cfbc3f98f1b00aa7,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,3,1.0
+fd9b09b2812e7814af77a73d2d034ed09702240a,False,Logic & Correctness,"Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+e166254717384e8d4195f2a7bf08a74e1a7ebeae,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+8f597c3bf515bc1dc962c7eefbe6eb6745b9d5a5,True,Logic & Correctness,Logic & Correctness,True,False,False,True,FALSE,False,False,3,2.0
+37f961db6ee47ecf9d67c5eb0945c37c79405d03,True,Logic & Correctness,Logic & Correctness,True,False,False,True,FALSE,False,False,3,5.0
+cba68396ac4351a5c4451c483c3343a800d71beb,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,3,1.0
+a44c8a43eebf6dc8119ebf465b1f617ee3b08c71,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+1406b20fe9c2f5e9bd1dd11cfa08bc3d81b294c2,True,Memory Safety & Robustness,Memory Safety & Robustness,True,False,False,True,FALSE,False,False,5,3.0
+95175012ecb180e9f40f57455a600401f854075c,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,1,3.0
+2cc93f77543b5721257f795f303bfb56a4b384c7,True,Feature & Value Add,Feature & Value Add,True,False,False,True,TRUE,True,False,3,5.0
+2913e4cef5f8ab04cc9b1c6ac0d2f6b2d89a5a90,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+5d1a4d81bf16fe341017f46bc1f102bdf72778fa,False,Logic & Correctness,Feature & Value Add,True,False,False,False,FALSE,True,False,5,3.0
+fd7ce5f7e1d65f632f4d795b3357a510be07ee74,True,Logic & Correctness,Logic & Correctness,True,False,False,True,FALSE,False,True,3,3.0
+13962b06d55aca59ae878383be6ded18de72587d,False,Logic & Correctness,Memory Safety & Robustness,False,False,True,True,FALSE,False,True,3,3.0
+8326e73bc163e15fd7b5264c0cc6cf2480723869,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,1,2.0
+572577e094bd436b2124aa0ef44df3d57f97d793,False,"Build, Refactor & Internal",Memory Safety & Robustness,True,False,False,True,FALSE,False,False,3,1.0
+d94849b092539a91ac1060c0df03ea79ae1e8d33,True,Logic & Correctness,Logic & Correctness,True,False,False,True,FALSE,False,False,5,3.0
+c9a46a91fe43e847c0a90dcdf5fce2e4abbdf667,False,Memory Safety & Robustness,"Build, Refactor & Internal",True,False,False,True,FALSE,False,False,3,2.0
+f4653dcd8be8b2b44814b9a3fd358a7bbb87b8c4,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,True,FALSE,False,True,3,3.0
+0c97eaa772b52dccff973b1d78907ee4033ca739,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,3,3.0
+2c2128387d7b5670f7f4a54cedc45b3b29552630,False,Logic & Correctness,Concurrency & Thread Safety,False,True,False,True,FALSE,False,False,3,1.0
+fd343dc36022e2c74ccd4c55c02c028e6db49ec3,True,Logic & Correctness,Logic & Correctness,True,False,False,True,FALSE,False,False,3,2.0
+28b7b4bd80e0c4b9b04e0f68f0cff563c6560cc3,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+cb2a71e3bac6f657aa179551bf032352838cf1b2,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+32a461f68b33c7073d9c483bdba46e8a70067f0a,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,1,2.0
+32acf0c3b44ed5ba2726d5dcb9f0307bb212ec38,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,True,FALSE,False,False,2,1.0
+e22dd5ce8c1a2eda65e93e0f24f03dc8c60c9b31,True,Logic & Correctness,Logic & Correctness,True,False,False,True,FALSE,False,True,2,2.0
+183fa3e79a958907c912e1e220d98c7b12cfc015,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+7deae0f80f15717961587dfaab697d2f6093a218,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,2,2.0
+89d9ef3ee83c6cd0b048b3dc8dabddfe690b5579,True,Concurrency & Thread Safety,Concurrency & Thread Safety,True,False,False,False,FALSE ,False,False,3,2.0
+aa6ca0b1d3587e9a5855c5b73e6062dabd27c0f3,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+8db67d270406ba5672a55b15ec926b2487dec8d5,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,3,3.0
+5951179239efa65a664a30e137effaa6e276576e,False,Logic & Correctness,Feature & Value Add,True,False,False,False,FALSE,True,True,5,5.0
+4a010875854648961876f7a3f870f34170689c42,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+6d93e9eacf09b6761f1d82138ae543035c0b4776,False,Logic & Correctness,"Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+b7c6ac44ec149a8d8b536869a88958cad332fd74,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,2,3.0
+7a2c2eedf4d185ec047ef9472f40a533507fee0c,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+ddda373eb529035db3b6b54433523853368ef05d,False,"Build, Refactor & Internal",Memory Safety & Robustness,False,False,True,True,FALSE,False,False,1,3.0
+79301d3d5e553d46fc3201f48dcec3a93068c5a2,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,True,FALSE,False,True,2,2.0
+e7dd2b8dc6fefba0142cfb2c77f3daf5f2236dfc,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+b424bae705180a2d6df2db1767e33eeec73ac029,True,Logic & Correctness,Logic & Correctness,True,False,False,True,FALSE,False,False,2,4.0
+06b7a7e05b3d9d3b0d0862ca68397dc6e556e276,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+25d5d9ac65979cf2edd17b95c7135010f8ea8641,True,Logic & Correctness,Logic & Correctness,True,False,False,False,FALSE ,False,True,1,1.0
+7e99c63be0c76e8456e69c7619f3979f97153c23,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,2,5.0
+3bd6ae147e294da6b378379cc87615b8fc111e73,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,True,FALSE,False,True,2,2.0
+72182550926d31ad17357bd3ed69e49d7e69df02,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,1,2.0
+811373e22173d1547ed9d4325a0837577595d006,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+115b13f9d13e221a0aae06b9df641b6fc400e32a,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+a9cce9cd0d7aff3ec318b5d8d376da131b6aaad4,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,False,4,5.0
+f967b904c2592a8698fa408fd390740bfed1cd5d,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,True,FALSE,False,True,1,1.0
+73c6e53aff56602b6d2a4437018456344274f110,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,False,FALSE ,False,False,3,2.0
+45e21e2ec517408251dc35683b86ad0c6012f5d4,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+16d3a618803e52a56ae586b621019799e896f7a3,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,1,2.0
+0f124fdd805e63a1f261fa104aca2958a4ce62c2,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+10543b1b4bd43954fd4186d5101b2ebccfc955f6,False,Logic & Correctness,"Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+cdfb54ff7ba3e881afbef10f90a56beaf3063034,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+2c80fc911678adc9dcf252b3bc71cce101c8728e,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,False,FALSE ,False,False,2,3.0
+529233ccdd43203fd74ec18a1d5a071c122c6e46,False,Memory Safety & Robustness,"Build, Refactor & Internal",True,False,False,True,FALSE,False,True,3,3.0
+809faa5237ef2c1d05600e2e25f71f251cf98530,False,Logic & Correctness,Memory Safety & Robustness,True,False,False,True,FALSE,False,True,3,3.0
+93506d41cbf59b56d586dcc1f40d77237a8bb1ee,False,Logic & Correctness,"Build, Refactor & Internal",False,True,False,True,FALSE,False,False,2,3.0
+e637953527c41abc4a1df766685734316232f615,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+e879861885b5e9848eee6c949b27784b13f92ef4,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,FALSE,False,True,1,1.0
+4dbe77a84f4ff3c5785906e76adbc21bb6e259b4,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,True,FALSE,False,True,3,3.0
+c4b278ecd37ac050efccd7b42cb15471667cf446,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,2,1.0
+7d689fabda4745aa3e153e164d68a494f5fd846e,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+5439624bd9167dbb880ea4a75d91677d20a6ebe3,True,Feature & Value Add,Feature & Value Add,True,False,False,True,TRUE,True,False,1,2.0
+1aefc862f3bfb0f9bb4833b18d23bb7368c89dc7,False,Logic & Correctness,Feature & Value Add,True,False,False,False,FALSE ,True,False,3,2.0
+6f0adb5ebf068a66d96dbcd778921662e7fce035,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+a15404034cb5de45a70114b16c60b20494ecc6e9,False,Logic & Correctness,"Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+1177ca42ab07e6a835b0a9a9218822b62caca3e4,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,1,3.0
+bf058dce131751ff8b69d32eae68cf564cd73aef,True,Logic & Correctness,Logic & Correctness,True,False,False,False,FALSE ,False,False,3,4.0
+07cb8226c097ce3d8db934a07025c62803ad1f64,False,"Build, Refactor & Internal",Feature & Value Add,True,False,False,False,FALSE ,True,True,5,5.0
+95c7f315abf6d1d1380d8dbf3817014d3d91e219,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+50822cb62b21b9b0dfab01561db8e2cbd9599e67,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,2,1.0
+a9c5677c2260c3372eac80622a28bd7357fdc96c,True,Logic & Correctness,Logic & Correctness,False,False,True,False,FALSE ,False,True,3,3.0
+ac941e32125d5d8a96fe504329c0b17c58ecbd04,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,1,2.0
+8231c03663cee1a9301690b22d0aedfc434e6915,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,False,FALSE ,False,False,3,5.0
+5ff3baf0dc814e7bc2f4209844d7da764bfd5f46,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,3,1.0
+aef1ff4372e080f9287209a4cdc8d13a275fccaa,False,Logic & Correctness,Memory Safety & Robustness,True,False,False,False,FALSE ,False,False,1,2.0
+8ad618d2d68037bc4cf8bcfbca15fe5735b41776,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,2,3.0
+9e7160d45a18bfa26d708e22ba991f7670d0128b,False,Feature & Value Add,"Build, Refactor & Internal",True,False,False,False,TRUE,False,True,5,5.0
+22d879bf0ab3ef14177a6388e28bb264bd36e64b,False,Logic & Correctness,Memory Safety & Robustness,False,False,True,False,FALSE ,False,True,3,3.0
+f77ec16db0e9907fad9c929f3e85fa82c84655fc,False,Logic & Correctness,Feature & Value Add,True,False,False,False,FALSE ,True,False,2,5.0
+519bc6a3ab82445a8719f548d0450efe02cc9c82,True,Feature & Value Add,Feature & Value Add,True,False,False,True,TRUE,True,False,3,2.0
+54a8f67c0504bb1bc17a2e5f139f3128953915d1,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,1,2.0
+a308c0cdf74de1ee446c2bab1ff752f554b8669d,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,4,1.0
+85dce1800d710a1f2456f4c8dd5b8b6b95c3742c,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,False,2,1.0
+84d70a462ff443b310ca90fdce722f81261dc93b,False,Feature & Value Add,"Build, Refactor & Internal",True,False,False,False,TRUE,False,True,3,3.0
+eb7189ff3568f0c105259beafcb32f246c9852dd,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,3,3.0
+e1560990ece201a47dd14b7a48c85733c878b9d6,True,Memory Safety & Robustness,Memory Safety & Robustness,True,True,True,False,FALSE ,False,True,3,3.0
+7d4060d252354a8d650a3c50256fe3679a40691d,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+d5cd0f07f868d4efbfddc35cfc1c02b08daa794f,False,Feature & Value Add,"Build, Refactor & Internal",True,False,False,False,TRUE,False,False,3,1.0
+4fc473d7e884ce5315c85febf28c2daeaca9ae0b,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+44e49f47e8eeb3d2f4e1a18038322c6d913b5958,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,False,FALSE ,False,True,1,1.0
+25dbd53ca5de0b279b5708964b87f29d0d3a2c27,False,Feature & Value Add,"Build, Refactor & Internal",True,False,False,False,True,False,True,1,1.0
+521d72a28449eaa0fcb6a2cbeaead72921d92b81,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,False,2,3.0
+9d43baf01462353382a200691ccbbad10c3420dd,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+0b7616916927bb23b9e3a63a9102f21370bb9616,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,True,2,2.0
+9b90184a48ba1aee2cf6c4db204a9084b61a41b4,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+d1212bdb73acab83956aadee76b88bb3120e2b68,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,True,5,5.0
+85f9f685e971b29e42fa829b45fa47c165383b98,False,Logic & Correctness,Memory Safety & Robustness,False,False,True,True,False,False,True,3,3.0
+f5631afd1e03a040552231494b6391052488e84f,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+c8332d90c01f6558e1c13fd5ebb96e85818c71d6,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,3.0
+9023d4ed1bcbc33113d509b696b542b04d030199,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+552736d257fb03ca23b2e61b082361b6c1c8b826,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,1.0
+be7d07aa8597784b9a39be840b64a54fde307a28,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,1.0
+10d1ff83436151b54865d59d846793936597711e,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,1,2.0
+3dd42e351d2e44b60c20635e83570b8d0c737676,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,4,5.0
+d49f2d54287542fcafac2943d39fb9be86581259,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,False,1,3.0
+4543ba6ccae14e8aaea20e86ea85831017f2dbed,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,4,3.0
+59f1f81afadaff9f298c54776f2f52a682f5e212,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+1fd2420144105e613ef0bb213b3b5986f9d8bab9,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,3,3.0
+62dea330d76a445aefbca66931743eb0d1de9c8e,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+8481c44c6b0134ec62226a80efc482f7ce7f8f6e,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,True,5,5.0
+3e1b9b1ea30da1adaac1421efbd8b12a67a691fd,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,False,2,1.0
+291b8a90a3dd9be03fdf7f53727c9f71bf56a4b7,True,Memory Safety & Robustness,Memory Safety & Robustness,False,True,False,True,False,False,False,4,3.0
+7770b767045e004edf90361b86a82e114d8286b6,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,3,3.0
+acf605db4258ddeebe9cf50b0f82040e569825f2,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+c00bbc1b6b36fc0d22af7bfd25a59d884bc7bbc8,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,3,2.0
+5e6d04525173c5917cde133736c4f7d39fcc97b2,False,Logic & Correctness,"Build, Refactor & Internal",True,False,False,True,False,False,True,2,2.0
+2bf2d2d0bde2b3149faf175451eb3f47dc492c7a,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,True,5,5.0
+ab8d5193a3fda921c6a68530d8dea98e481cd4cd,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,False,3,2.0
+6c58bef3ab12edd0dbbfe30a41a86b4b04530d2d,False,Memory Safety & Robustness,Logic & Correctness,False,True,False,True,False,False,False,4,2.0
+a4a0f8d0001f8e565c3d18562e3dd18d0448eda5,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,4,3.0
+7db4829421094162670823a38aab6114ed3ab59a,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,4,2.0
+6924103c8be5d387d01744aa68eaddedea33b69d,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+8fda0272109b64c302d08e804e5cea4a0344d311,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+7980448ac95965995627905112c76c4f4184a818,False,Logic & Correctness,Feature & Value Add,True,False,False,False,False,True,True,3,3.0
+d45ab083555138cdf46b5a795bc59ab88778e6b9,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+57f011e4b7111ee963c0d84d89f614833b82c17b,False,Memory Safety & Robustness,"Build, Refactor & Internal",False,True,False,True,False,False,False,2,3.0
+22f60d1f70c4386dacd3f2c6d1f9e4f4ead4b851,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,3,2.0
+47e1bc0845267ccbc87b377428bd86a0c3eadeb7,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,True,3,3.0
+75ae6c7ed04d17ba524724decbafe7a4974d68d3,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+81d194af85a584b981dbcad1bf53c7f9158fb2d4,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,2,5.0
+1ebc3968fc08ca28110e52312aaff84ada2fa419,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,3.0
+ac70ab5345fe2566472cf45dc247b71f3832a3a5,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,3.0
+d3184198b9930a0612dcc35ecb0a43e1081bdfca,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,2,2.0
+e031a6b51ce3ed43e16aeb004803a4cdc751b5de,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,True,2,2.0
+4078ecc8d49737ded1c1e3d169e3c7df89178cf7,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+711fdd5d43820d4ee07f61ea19fa5d9666e2b44e,False,Feature & Value Add,"Build, Refactor & Internal",True,False,False,False,True,False,True,3,3.0
+c9a1d181a9af91857f26d1e78e2695d8c50b66a3,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+961abc8f274ff5145ba58d42035d73797f022db9,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,3,2.0
+05059fdc82cf0086f43bd99ec1beba9122f41a3b,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,3,4.0
+a7c9a22ad9880e79696c3bbfd8d038abfeeb7e59,False,Logic & Correctness,Memory Safety & Robustness,False,False,True,True,False,False,True,3,3.0
+f7ee91fc8f510611dc434bee6b774e4989d0e0c5,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,False,2,3.0
+34e8d500ae3493b54fb0c56f736300b602ae4553,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,False,3,2.0
+852261029f69725649a554e177e9fbb9047e3a7b,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,2,2.0
+4934d7b280d793ad5eb96b37be6d95d6d9ef9c69,False,"Build, Refactor & Internal",Feature & Value Add,True,False,False,False,False,True,False,3,5.0
+36b83bf04bb28fc11cc17afc8c830bef671ce0bf,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,1.0
+66d8fa292423c1cee7b0e1577a3548d7268005ea,False,Logic & Correctness,Memory Safety & Robustness,False,False,True,True,False,False,True,3,3.0
+15f5075774a0057c786897c5c433d435e296e6ef,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,4,3.0
+f492dd7c9d5eb5c77b88aaa1380c942d753baa67,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+4c853840f770cb87cb5482db3476ee262bb2ed55,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,2,4.0
+7a849e590e61cb43b256055444ab1750ec0c005c,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,True,2,2.0
+4d8804d86a212de1ba0da8299ba33a40fedac47a,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,1,2.0
+c590fdf3b69a80435ff669303050590993db762c,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+fe7472c51853e7f21529715e1b1bad6e205d68fc,False,Logic & Correctness,"Build, Refactor & Internal",True,False,False,True,False,False,False,4,3.0
+65415664a9c15716325672cf4db6c8ba9f3e62ba,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,False,2,3.0
+7be17b70cdfe21de5716636d47cd3e63feaa0097,False,"Build, Refactor & Internal",Feature & Value Add,True,False,False,False,False,True,False,1,5.0
+3aafd81726ad4045ca55d73835f3cf25f2808a14,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+34dc5de145f9ad3820c5d4d2164d7a6b5f2d050a,False,Feature & Value Add,"Build, Refactor & Internal",True,False,False,False,True,False,False,2,3.0
+4855faee830cd5e9100429567cb1ac587f2db2d7,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,1,3.0
+add740632a62e0cfdef022e0bdf960009f63f611,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,1,3.0
+58924da393c869ee921121b528d810d62afd6830,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+a52874bf94af5394f4ae6aaf81efa44f599a9c88,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+3917bf06d19cbcd27720947d0c000aa413ec16d3,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,1.0
+27a93b3259be5ab74387a725386cd9226128ab06,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,1,2.0
+597461116f20554fe77359cde0742a9e4a94255e,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+302043671f53d80c2f5e7019fc35e97e8338392c,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,1,3.0
+221b57d73f9f44060bcf13f49e5868ee13ae1f55,True,Logic & Correctness,Logic & Correctness,True,False,False,True,False,False,True,2,2.0
+97a6be5083270cf204544da066b49d3110f69862,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+5df8ad7519257076ef030f5458254a92565863fa,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+14a8ce08199d299e3f2459421f4b9dee1ae016eb,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,1,2.0
+ea34144ac4c66db596137acf587bb3fa4301ac03,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+0cad85c1264ced5c6a6bf37cc7df0fb398e59cb2,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+78b7bc089b402b7f8de2c6f2180b77b591477f16,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+265977510144d57cba34e1dbabbb6d92a9b0553d,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+e6f7be47a7adfbd1e1936a6e7eb5654120b8d0a7,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,1,2.0
+41f1b906ffa0b8b95d854470b932231a39dc1288,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+35aa519ba6c62c091c409d8fccd5387b04e84d49,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+646ce4b866ee574f9f7e85de1496eea519ac2166,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+a7c0117653f2ed4d3973363b3b3545f30fecf1b4,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+b97d2236aa86c0972a3afc615b7187fd72bf39d4,False,Logic & Correctness,"Build, Refactor & Internal",True,False,False,True,False,False,True,2,2.0
+8fa6c6a4862e40fc05c8e13cbe40951c49b7b169,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+ec1f2dfe7db4836c1ac714430210cc87f576e35d,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,1,2.0
+d26b547cf2498ead46913d8f2f4d5c558a9624d3,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+bd0d7f40f6485581251e4dbde93bfa876a72c862,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,1.0
+17e575e6f9cf0642b3f6db62f590b0a7df0e8f7b,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,3,5.0
+0fd5959ada8da32dc1a826d2f85f5555bbbafab1,True,Feature & Value Add,Feature & Value Add,True,False,False,True,True,True,False,3,4.0
+e7fa0cec38b5d014c0f423b673e79e2006e80c1d,True,Logic & Correctness,Logic & Correctness,False,False,True,True,False,False,False,4,3.0
+cd6f81387c9ec1b9bb1458b12ae6353879fc0983,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,False,2,3.0
+cbf7fa347656d1dab57449cbe3632df122c5717a,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+8559e19f4aeda0488ffb939a11b9b74993bcd047,True,"Build, Refactor & Internal","Build, Refactor & Internal",True,False,False,True,False,False,True,1,1.0
+c7e740dc02a1bba7044786c59cbad94f3709666c,False,"Build, Refactor & Internal",Feature & Value Add,True,False,False,False,False,True,True,3,3.0

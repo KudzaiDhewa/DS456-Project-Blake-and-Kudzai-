@@ -100,15 +100,16 @@ pip install -r requirements.txt
 
 ### Running the Pipeline
 
-Recommended execution order:
-python 00_clone_repo.py
-python 01_data_prepare.py
-python 02_jsonl_uploader.py
-python 03_model_training.py
-python 04_model_evaluation.py
-python 08_add_synthetic_commit_ids.py
-python 09_merge_labeled_gold_standard.py
-python 10_inference_visuals.py
+## Recommended execution order:
+
+- python 00_clone_repo.py
+- python 01_data_prepare.py
+- python 02_jsonl_uploader.py
+- python 03_model_training.py
+- python 04_model_evaluation.py
+- python 08_add_synthetic_commit_ids.py
+- python 09_merge_labeled_gold_standard.py
+- python 10_inference_visuals.py
 
 
 ### Authors 

@@ -7,44 +7,74 @@ The project uses Git commit data, commit diffs, and LLM-based classification to 
 
 The final outputs include cleaned datasets, model predictions, comparisons to a human-labeled gold standard, and publication-ready visualizations.
 
-.
-├── FPmilestones/                   # Project milestones and checkpoints
-├── KD/                             # Commit analysis by Kudzai
-├── final-narrative/                # Final written narrative (Quarto / report files)
-├── visualizations/                 # Figures and plots used in the final report
-│
-├── 00_clone_repo.py                # Clone and initialize target GitHub repositories
-├── 01_data_prepare.py              # Clean and preprocess raw commit data
-├── 02_jsonl_uploader.py            # Convert data to JSONL format for LLM inference
-├── 03_model_training.py            # Train / configure classification model
-├── 04_model_evaluation.py          # Evaluate model performance
-├── 07_libxml2_label_summary.py     # Label summary for libxml2 case study
-├── 08_add_synthetic_commit_ids.py  # Add synthetic IDs for tracking commits
-├── 09_merge_labeled_gold_standard.py # Merge LLM labels with gold standard
-├── 10_inference_visuals.py         # Generate inference and time-series visualizations
-│
-├── FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv  # Final predictions with time series
-├── GOLD_VS_MODEL_COMPARISON.csv               # Gold standard vs model comparison
-│
-├── prompt_config.py               # Prompt templates and LLM configuration
-├── requirements.txt               # Python dependencies
-├── superset.txt                   # Superset of labels / categories
-├── README.md                      # Project documentation
-└── .gitignore
+### Repository Structure
+## Directories
 
+FPmilestones/
+Project milestones and checkpoints
 
-### Data Description
+KD/
+Commit analysis (Kudzai)
 
-Each observation corresponds to a Git commit, with key variables including:
+final-narrative/
+Final written narrative (Quarto / report files)
 
-| Variable         | Description                                              | Type        |
-| ---------------- | -------------------------------------------------------- | ----------- |
-| `commit_diff`    | Summary of code changes (lines added, removed, modified) | Text        |
-| `commit_message` | Commit message written by the contributor                | Text        |
-| `timestamp`      | Date and time the commit was authored                    | Datetime    |
-| `author`         | Commit author identifier                                 | Categorical |
-| `library`        | Open-source library name                                 | Categorical |
-| `language`       | Programming language (C or Rust)                         | Categorical |
+visualizations/
+Figures and plots used in the final report
+
+## Scripts
+
+00_clone_repo.py
+Clone and initialize target GitHub repositories
+
+01_data_prepare.py
+Clean and preprocess raw commit data
+
+02_jsonl_uploader.py
+Convert data to JSONL format for LLM inference
+
+03_model_training.py
+Train and configure the classification model
+
+04_model_evaluation.py
+Evaluate model performance
+
+07_libxml2_label_summary.py
+Label summary for the libxml2 case study
+
+08_add_synthetic_commit_ids.py
+Add synthetic IDs for tracking commits
+
+09_merge_labeled_gold_standard.py
+Merge LLM labels with the human-labeled gold standard
+
+10_inference_visuals.py
+Generate inference and time-series visualizations
+
+## Data Outputs
+
+FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv
+Final predictions with time-series data
+
+GOLD_VS_MODEL_COMPARISON.csv
+Comparison between model predictions and gold standard labels
+
+## Configuration & Metadata
+
+prompt_config.py
+Prompt templates and configuration for LLM inference
+
+requirements.txt
+Python dependencies
+
+superset.txt
+Superset of labels and maintenance categories
+
+README.md
+Project documentation
+
+.gitignore
+Git ignore rules
 
 ### Key Outputs
 

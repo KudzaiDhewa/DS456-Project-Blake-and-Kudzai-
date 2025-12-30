@@ -8,28 +8,28 @@ The project uses Git commit data, commit diffs, and LLM-based classification to 
 The final outputs include cleaned datasets, model predictions, comparisons to a human-labeled gold standard, and publication-ready visualizations.
 
 .
-├── FPmilestones/              # Project milestones and checkpoints
-├── KD/                        # commit analysis by Kudzai 
-├── final-narrative/           # Final written narrative (Quarto / report files)
-├── visualizations/            # Figures and plots used in the final report
+├── FPmilestones/                   # Project milestones and checkpoints
+├── KD/                             # Commit analysis by Kudzai
+├── final-narrative/                # Final written narrative (Quarto / report files)
+├── visualizations/                 # Figures and plots used in the final report
 │
-├── 00_clone_repo.py           # Clone and initialize target GitHub repositories
-├── 01_data_prepare.py         # Clean and preprocess raw commit data
-├── 02_jsonl_uploader.py       # Convert data to JSONL format for LLM inference
-├── 03_model_training.py       # Train / configure classification model
-├── 04_model_evaluation.py     # Evaluate model performance
-├── 07_libxml2_label_summary.py# Label summary for libxml2 case study
-├── 08_add_synthetic_commit_ids.py # Add synthetic IDs for tracking commits
+├── 00_clone_repo.py                # Clone and initialize target GitHub repositories
+├── 01_data_prepare.py              # Clean and preprocess raw commit data
+├── 02_jsonl_uploader.py            # Convert data to JSONL format for LLM inference
+├── 03_model_training.py            # Train / configure classification model
+├── 04_model_evaluation.py          # Evaluate model performance
+├── 07_libxml2_label_summary.py     # Label summary for libxml2 case study
+├── 08_add_synthetic_commit_ids.py  # Add synthetic IDs for tracking commits
 ├── 09_merge_labeled_gold_standard.py # Merge LLM labels with gold standard
-├── 10_inference_visuals.py    # Generate inference and time-series visualizations
+├── 10_inference_visuals.py         # Generate inference and time-series visualizations
 │
-├── FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv
-├── GOLD_VS_MODEL_COMPARISON.csv
+├── FINAL_CSS_WITH_PREDICTION_TIMESERIES.csv  # Final predictions with time series
+├── GOLD_VS_MODEL_COMPARISON.csv               # Gold standard vs model comparison
 │
-├── prompt_config.py           # Prompt templates and configuration for LLM
-├── requirements.txt           # Python dependencies
-├── superset.txt               # Superset of labels / categories
-├── README.md                  # Project documentation
+├── prompt_config.py               # Prompt templates and LLM configuration
+├── requirements.txt               # Python dependencies
+├── superset.txt                   # Superset of labels / categories
+├── README.md                      # Project documentation
 └── .gitignore
 
 

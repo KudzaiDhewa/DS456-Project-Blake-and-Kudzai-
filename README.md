@@ -98,9 +98,9 @@ Install dependencies with:
 pip install -r requirements.txt
 
 
-### Running the Pipeline
+## Running the Pipeline
 
-## Recommended execution order:
+### Recommended execution order:
 
 - python 00_clone_repo.py
 - python 01_data_prepare.py
